@@ -49,7 +49,7 @@ router.get("/locations", async (req, res) => {
     where: { userId: req.user!.id },
     include: { location: true }
   });
-  res.json(assignments.map((a) => a.location));
+  res.json(assignments.map((a: any) => a.location));
 });
 
 router.post("/clock-in", upload.single("photo"), async (req, res) => {

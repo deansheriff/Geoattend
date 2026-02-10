@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/requireRole.js";
-import { AttendanceStatus, Role } from "@prisma/client";
+import { AttendanceRecord, AttendanceStatus, Role } from "@prisma/client";
 import { minutesBetween } from "../utils/time.js";
 
 const router = Router();
@@ -178,8 +178,8 @@ router.get("/attendance/summary", async (req, res) => {
     where: { tenantId: req.user!.tenantId }
   });
 
-  const totalMinutes = records.reduce((sum, r) => sum + (r.totalMinutes || 0), 0);
-  const lateCount = records.filter((r) => r.status === AttendanceStatus.LATE).length;
+  const totalMinutes = records.reduce((sum: number, r: AttendanceRecord) => sum + (r.totalMinutes || 0), 0);
+  const lateCount = records.filter((r: AttendanceRecord) => r.status === AttendanceStatus.LATE).length;
 
   res.json({
     totalHours: Math.round(totalMinutes / 60),
@@ -202,7 +202,7 @@ router.get("/analytics", async (req, res) => {
     byUser[user.id] = { minutes: 0, late: 0, early: 0 };
   }
 
-  for (const record of attendance) {
+  for (const record of attendance as AttendanceRecord[]) {
     if (!byUser[record.userId]) continue;
     byUser[record.userId].minutes += record.totalMinutes || 0;
     if (record.status === AttendanceStatus.LATE) byUser[record.userId].late += 1;
@@ -234,7 +234,7 @@ router.get("/export", async (req, res) => {
   });
 
   const header = "employee,date,clock_in,clock_out,total_minutes,location\n";
-  const rows = records.map((r) => {
+  const rows = records.map((r: any) => {
     return [
       r.user.name,
       r.date.toISOString(),
