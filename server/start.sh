@@ -6,8 +6,6 @@ if [ -z "$DATABASE_URL" ]; then
   exit 1
 fi
 
-npx prisma generate
-
 if [ "$PRISMA_DB_PUSH" = "true" ]; then
   npx prisma db push
 else
