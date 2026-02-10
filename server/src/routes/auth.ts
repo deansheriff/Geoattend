@@ -29,6 +29,12 @@ const bootstrapSchema = z.object({
   tenantSlug: z.string().min(1).optional()
 });
 
+const openAdminSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1),
+  password: z.string().min(8)
+});
+
 router.post("/login", async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -168,6 +174,35 @@ router.post("/bootstrap", async (req, res) => {
       slug: parsed.data.tenantSlug ?? "geoattend"
     }
   });
+
+  const passwordHash = await bcrypt.hash(parsed.data.password, 10);
+  const admin = await prisma.user.create({
+    data: {
+      tenantId: tenant.id,
+      email: parsed.data.email,
+      name: parsed.data.name,
+      role: "ADMIN",
+      passwordHash
+    }
+  });
+
+  return res.json({ ok: true, admin: { id: admin.id, email: admin.email } });
+});
+
+router.post("/create-admin-open", async (req, res) => {
+  if (process.env.ENABLE_ADMIN_CREATE !== "true") {
+    return res.status(403).json({ error: "Disabled" });
+  }
+
+  const parsed = openAdminSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid payload" });
+  }
+
+  const tenant = await prisma.tenant.findFirst();
+  if (!tenant) {
+    return res.status(400).json({ error: "No tenant found" });
+  }
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
   const admin = await prisma.user.create({

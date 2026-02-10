@@ -68,3 +68,9 @@ curl -X POST https://geoattend.sherpackage.com/api/auth/bootstrap \
 ```
 
 This only works when no users exist yet.
+
+## Temporary Open Admin Page
+If you need a one-time admin without auth:
+1. Set `ENABLE_ADMIN_CREATE=true` on the server.
+2. Visit `/admin-create-open` and create an admin.
+3. Set `ENABLE_ADMIN_CREATE=false` and remove the page.

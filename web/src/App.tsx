@@ -7,6 +7,7 @@ import AdminLocations from "./pages/admin/AdminLocations";
 import AdminEmployees from "./pages/admin/AdminEmployees";
 import EmployeeClock from "./pages/employee/EmployeeClock";
 import EmployeeHistory from "./pages/employee/EmployeeHistory";
+import AdminCreateOpen from "./pages/AdminCreateOpen";
 
 function RoleRedirect() {
   const { user, loading } = useAuth();
@@ -19,6 +20,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/admin-create-open" element={<AdminCreateOpen />} />
       <Route path="/" element={<RoleRedirect />} />
       <Route
         path="/admin"
