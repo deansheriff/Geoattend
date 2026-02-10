@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Geofence Location Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b8cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-200">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 shrink-0">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary text-white">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<h2 class="text-lg font-bold tracking-tight">GeoTrack Admin</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-semibold text-primary" href="#">Locations</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Employees</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="h-9 w-64 rounded-lg border-none bg-slate-100 dark:bg-slate-800 pl-10 text-sm focus:ring-2 focus:ring-primary/50" placeholder="Search locations..." type="text"/>
+</div>
+<button class="flex h-9 w-9 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-9 w-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden ring-2 ring-white dark:ring-slate-800">
+<img alt="User Profile" data-alt="Professional user profile picture avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQiPY5NYs_MrxW8SzAx01pBJt3SAO2g4TTJj9IsAWvrvYuSK6Ap4yhtOY7DC73Q3bmQDKh42S7FKzBywlomSlVv01_k1NWXwKlAZttsZagEC7TNFlZkrzerJIOhNsQRT4N7iD7KPz_t2H4AjFFoNW92ZIKRLFbOj3lmkvSm9CXB3_hcIsSNdnTt_Q0H3M9DDlcopU-ys7yMQ2knl5vWC5LLqEZyuaiCOblb_TrBhzL59pKPP-vRHpw9f47DEgQ1Q5_sMNPYgDQvFA"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex flex-1 overflow-hidden">
+<!-- Sidebar / List View (Left Desktop) -->
+<div class="flex w-96 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+<div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<div>
+<h1 class="text-xl font-bold">Geofences</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">12 active zones globally</p>
+</div>
+<button class="flex h-9 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-bold text-white shadow-sm hover:bg-primary/90 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Add New</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+<!-- Location Item: Active/Selected -->
+<div class="group relative flex flex-col rounded-xl border-2 border-primary bg-primary/5 p-4 transition-all">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined filled-icon">business</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Main Office</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400">123 Tech Avenue, Silicon Valley</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<div class="flex -space-x-2">
+<img alt="User" class="h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-900" data-alt="Employee avatar group" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW-4k8fSKp9fuPbEVGrdbDS6trUTgthOWuVHpVcxKO950qzfyDm9O854YvWrX_gho4-GVYmt3HxUQwf3rrd4J-EdkQDU1Y_LgAjToNuOXZ975w8qFJwqb1cs6IgWEhTWLNYjlw2qUMudZEzXwCFapQpxMUQ_k_tRjTJuan1Oi-Suo5jGtO317aLHmafHGAo-2zYeEhqJ6DgyzzIzJ1G-6zon6QpY6-TLBVWr8rM3izqFzLTkqCC2GzHCSnEKflmRSVZ3l-mQ-e70M"/>
+<img alt="User" class="h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-900" data-alt="Employee avatar group" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4L0Dfogyao6QeBCVlKwcw-weyTLiKjuwMB9ZO_bKLmYOtnczacRpSLKF6QrvCKhjFTWM_FlWZvpt0akGLfywUd5raxbPHlp0kjKE-y39TU_0eUOdiywexgDO5B1H45bpRl1Gp7ktRLTmEYlDtjNHLX15shH0xleEjtYktviy9pvL4guN9vcLrcT_45iUMds7C79NvgeyjCfAXN4xf4DoE1rWuBDuDxzv6pzG56eYBAEsOyEttMLxXXSPHdmv49h6LQo5rKpWK0II"/>
+<div class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-[10px] font-bold ring-2 ring-white dark:ring-slate-900">+12</div>
+</div>
+<div class="flex gap-1">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Location Item: Default -->
+<div class="group relative flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">
+<span class="material-symbols-outlined">warehouse</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Warehouse A</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400">Port Industrial Zone, Pier 9</p>
+</div>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-sm">groups</span>
+<span class="text-xs font-medium">45 Personnel</span>
+</div>
+<div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Location Item: Default -->
+<div class="group relative flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Logistics Hub</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400">Highway 101 Exit, Northern Sector</p>
+</div>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-sm">groups</span>
+<span class="text-xs font-medium">8 Personnel</span>
+</div>
+<div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Location Item: Inactive -->
+<div class="group relative flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4 opacity-60">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-400">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-700 dark:text-slate-300">R&amp;D Center (Disabled)</h3>
+<p class="text-xs text-slate-500">Research Park, Block B</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Map Interface (Center/Right) -->
+<div class="relative flex-1 bg-slate-200 dark:bg-slate-800 overflow-hidden">
+<!-- Map Placeholder Image -->
+<div class="absolute inset-0 z-0 bg-cover bg-center" data-alt="Interactive detailed satellite city map view" data-location="San Francisco" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC6PPfVik7ZI1Joyc9FqgnC3VwQLW1YGWxVogDZ2LT_lJRwzE9gE72LlJsMWKdwPsji3WCH4EJMMfBsy8Ll-UICct1BPYD4ORsMxUjOEmK6tf4LscuI8hnJdj_lTsSFB8ErYWntj6f-BeMdDCt0LhOinYMsC7nUSf5gjLz2ZC4imAXip6EeqZIJawwReBIpTsR5qR667-vdD1V9bqa15KYpOGJgSLYY_bb020HL2wpDvYz0JN5WyY3QUFK5OjSXjjk6WThy94neGF4');">
+<!-- Overlay to simulate dark map mode if needed -->
+<div class="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
+</div>
+<!-- Geofence Visualizations (Faux Map Elements) -->
+<!-- Main Office Circle -->
+<div class="absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+<!-- Radius Circle -->
+<div class="h-64 w-64 animate-pulse rounded-full border-2 border-emerald-500 bg-emerald-500/20"></div>
+<!-- Marker -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[100%]">
+<span class="material-symbols-outlined text-emerald-600 filled-icon text-5xl drop-shadow-lg">location_on</span>
+</div>
+</div>
+<!-- Warehouse A Circle -->
+<div class="absolute right-1/4 top-1/4 z-10">
+<div class="h-48 w-48 rounded-full border border-blue-500/50 bg-blue-500/10"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[100%]">
+<span class="material-symbols-outlined text-blue-500 filled-icon text-4xl drop-shadow-md">location_on</span>
+</div>
+</div>
+<!-- Map Controls (Top Right) -->
+<div class="absolute top-4 right-4 flex flex-col gap-2 z-20">
+<div class="flex flex-col rounded-lg bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">add</span>
+</button>
+<div class="h-[1px] bg-slate-200 dark:bg-slate-800"></div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<button class="flex h-10 w-10 items-center justify-center rounded-lg bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-lg bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">layers</span>
+</button>
+</div>
+<!-- Detail Panel (Bottom Center) - Appears on selection -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-2xl px-6 z-20">
+<div class="rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center gap-6">
+<div>
+<h2 class="text-xl font-black tracking-tight text-slate-900 dark:text-white">Main Office</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">Active Zone</span>
+<span class="text-slate-400 text-xs font-medium">• 300m Radius</span>
+</div>
+</div>
+<div class="h-10 w-[1px] bg-slate-200 dark:bg-slate-800"></div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Coordinates</p>
+<p class="text-sm font-mono font-medium text-slate-600 dark:text-slate-400">37.7749° N, 122.4194° W</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+<span class="material-symbols-outlined text-lg">edit</span>
+<span>Edit Boundary</span>
+</button>
+<button class="flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-white dark:text-slate-900 px-4 py-2 text-sm font-bold text-white shadow-lg hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-lg">group_add</span>
+<span>Assign Staff</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Search Map Field (Top Left) -->
+<div class="absolute top-4 left-4 z-20 w-80">
+<div class="flex items-center rounded-xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 p-2">
+<span class="material-symbols-outlined ml-2 text-slate-400">location_on</span>
+<input class="border-none bg-transparent text-sm focus:ring-0 w-full text-slate-900 dark:text-white placeholder:text-slate-400" placeholder="Search address..." type="text"/>
+<button class="ml-1 h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">
+<span class="material-symbols-outlined text-lg">directions</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Employee Clock-In &amp; Location Check</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#2b8cee",
+                "background-light": "#f6f7f8",
+                "background-dark": "#101922",
+                "success": "#10b981",
+                "error": "#ef4444",
+              },
+              fontFamily: {
+                "display": ["Inter", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e5e7eb] dark:border-[#2d394a] bg-white dark:bg-[#1a242f] px-10 py-3">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-3xl">location_on</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">GeoAttend</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary" href="#">Clock In</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Timesheet</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Settings</a>
+</nav>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f4] dark:bg-[#2d394a] text-[#111418] dark:text-white">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDqoEN47-S917IQ_FB8FiYcy2eKwlEK0JN7xC9bcn-Zi7H8gqATWb8UoR5TySmxbnSfkX8FjxEs2JzBf-_31Mq6fBucKDDETmNLavatjQC14LTpJgyfWoz9SZVpr7HlELvmDTWSSaPLMMpwSU6t9tRVaUJaf0WzGOconWdL4odz6XN_DexGc2E4D8M_jiN--k4LaEoLfctquTgEqpqb42WeJeNiAU_qWEyrumi8T2Al-jFG771NWcXHzB_jfytxzYxO4tO9S6MPTWA");'></div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex flex-1 flex-col items-center justify-center py-12 px-4">
+<!-- Main Container -->
+<div class="w-full max-w-[640px] flex flex-col gap-6">
+<!-- Date and Time Display -->
+<div class="text-center space-y-1">
+<h1 class="text-3xl font-bold tracking-tight">Monday, Oct 23</h1>
+<p class="text-5xl font-black text-primary tabular-nums">09:41 AM</p>
+</div>
+<!-- Main Action Card -->
+<div class="bg-white dark:bg-[#1a242f] rounded-xl shadow-xl overflow-hidden border border-[#e5e7eb] dark:border-[#2d394a]">
+<!-- Map Display -->
+<div class="relative w-full h-64 bg-slate-200 dark:bg-slate-800">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="Map showing current location and geofence circle" data-location="San Francisco" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6PPfVik7ZI1Joyc9FqgnC3VwQLW1YGWxVogDZ2LT_lJRwzE9gE72LlJsMWKdwPsji3WCH4EJMMfBsy8Ll-UICct1BPYD4ORsMxUjOEmK6tf4LscuI8hnJdj_lTsSFB8ErYWntj6f-BeMdDCt0LhOinYMsC7nUSf5gjLz2ZC4imAXip6EeqZIJawwReBIpTsR5qR667-vdD1V9bqa15KYpOGJgSLYY_bb020HL2wpDvYz0JN5WyY3QUFK5OjSXjjk6WThy94neGF4");'>
+</div>
+<!-- Map Overlay Elements -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="relative">
+<div class="absolute -inset-16 rounded-full border-2 border-primary/30 bg-primary/10 animate-pulse"></div>
+<div class="relative z-10 bg-primary text-white p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-2xl">person_pin_circle</span>
+</div>
+</div>
+</div>
+<!-- Status Floating Badge -->
+<div class="absolute top-4 left-4">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/15 border border-success/30 text-success text-sm font-bold backdrop-blur-sm">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                                    Within Range
+                                </div>
+</div>
+</div>
+<!-- Card Content -->
+<div class="p-8 flex flex-col items-center gap-6">
+<div class="text-center">
+<p class="text-[#617589] dark:text-gray-400 text-sm font-medium mb-1">Office: HQ - San Francisco</p>
+<p class="text-lg font-semibold">Ready to begin your shift?</p>
+</div>
+<!-- Big Clock In Button -->
+<button class="group relative flex h-40 w-40 flex-col items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 transition-transform active:scale-95 hover:bg-primary/90">
+<span class="material-symbols-outlined text-5xl mb-1">login</span>
+<span class="text-xl font-bold">Clock In</span>
+<div class="absolute -inset-2 rounded-full border-2 border-primary/20 scale-110 group-hover:scale-125 transition-transform"></div>
+</button>
+<!-- Range Selection Toggle (Optional but fits design) -->
+<div class="flex w-full max-w-xs h-11 items-center justify-center rounded-lg bg-[#f0f2f4] dark:bg-[#2d394a] p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center rounded-lg px-2 bg-white dark:bg-primary shadow-sm text-primary dark:text-white text-sm font-bold">
+<span class="truncate">Regular Shift</span>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center rounded-lg px-2 text-[#617589] dark:text-gray-400 text-sm font-medium">
+<span class="truncate">Overtime</span>
+</label>
+</div>
+</div>
+<!-- Stats Footer -->
+<div class="grid grid-cols-2 border-t border-[#e5e7eb] dark:border-[#2d394a] bg-background-light/50 dark:bg-background-dark/20">
+<div class="flex flex-col items-center py-4 border-r border-[#e5e7eb] dark:border-[#2d394a]">
+<span class="text-xs font-semibold text-[#617589] dark:text-gray-400 uppercase tracking-wider">Scheduled Start</span>
+<span class="text-lg font-bold">09:00 AM</span>
+</div>
+<div class="flex flex-col items-center py-4">
+<span class="text-xs font-semibold text-[#617589] dark:text-gray-400 uppercase tracking-wider">Today's Total</span>
+<span class="text-lg font-bold">0h 00m</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Section -->
+<div class="flex flex-col gap-3">
+<h3 class="text-sm font-bold text-[#617589] dark:text-gray-400 uppercase px-1">Recent Activity</h3>
+<div class="bg-white dark:bg-[#1a242f] rounded-lg border border-[#e5e7eb] dark:border-[#2d394a] p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-success/10 text-success flex items-center justify-center">
+<span class="material-symbols-outlined">logout</span>
+</div>
+<div>
+<p class="font-bold text-sm">Clocked Out (Friday)</p>
+<p class="text-xs text-[#617589]">Main Entrance Geofence</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm">05:12 PM</p>
+<p class="text-xs text-[#617589]">Total: 8h 12m</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Info for Mobile-to-Desktop Feel -->
+<footer class="py-6 px-10 text-center text-xs text-[#617589] dark:text-gray-500">
+<p>© 2023 AttendanceManager Inc. • Secure Location-Based Service Active</p>
+</footer>
+</div>
+</div>
+</body></html>

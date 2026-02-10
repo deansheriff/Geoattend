@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Employee Attendance History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b8cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white transition-colors duration-200">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex-shrink-0 border-r border-[#dbe0e6] dark:border-[#2d3a4a] bg-white dark:bg-background-dark flex flex-col justify-between py-6 px-4">
+<div class="flex flex-col gap-8">
+<!-- Branding -->
+<div class="flex items-center gap-3 px-2">
+<div class="bg-primary size-8 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">location_on</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">GeoAttend</h1>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] dark:hover:bg-primary/10 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] dark:hover:bg-primary/10 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">schedule</span>
+<span class="text-sm font-medium">Clock-In/Out</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-md shadow-primary/20" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-sm font-medium">Attendance History</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] dark:hover:bg-primary/10 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm font-medium">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] hover:bg-[#f0f2f4] dark:hover:bg-primary/10 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Profile Mini -->
+<div class="mt-auto pt-4 border-t border-[#dbe0e6] dark:border-[#2d3a4a]">
+<div class="flex items-center gap-3 px-2">
+<img alt="Alex Johnson" class="size-10 rounded-full border border-gray-200 dark:border-gray-700" data-alt="Close up portrait of a professional male designer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVrPoqVhAk-R1k9mAOCcDtAYkxkqGzrdmXX53mbYd4-HF5mgDM0RiXg47Ko3noQpOZOc0XFNo7vmsWl_XKlWBgv68URroWPJr1JSgwCAkR1Aqax4p9i2-nsuKnhIAGtjc_QSORCBAfrk4hOREnGcKjULDWZimLAoRVeKcddAu6RgHv4KhX01uUJntbUpSZW05KDB6e6TLMVYjOMQJjBmiuY21URRcHUyJltMsrzm-AByOHunpM4GSKvyGvbL26UpPTJZKqAG0rIiE"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold truncate">Alex Johnson</span>
+<span class="text-xs text-[#617589]">Product Designer</span>
+</div>
+</div>
+<button class="mt-4 w-full flex items-center justify-center gap-2 bg-[#f0f2f4] dark:bg-[#2d3a4a] text-[#111418] dark:text-white py-2 rounded-lg text-sm font-bold hover:bg-[#e2e5e8] transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+                    Sign Out
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto bg-[#f8fafc] dark:bg-background-dark/50">
+<!-- Header -->
+<header class="h-16 flex items-center justify-between px-8 border-b border-[#dbe0e6] dark:border-[#2d3a4a] bg-white dark:bg-background-dark flex-shrink-0">
+<h2 class="text-lg font-bold">Attendance History</h2>
+<div class="flex items-center gap-4">
+<button class="size-10 flex items-center justify-center rounded-lg bg-[#f0f2f4] dark:bg-[#2d3a4a] text-[#617589] hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-[#f0f2f4] dark:bg-[#2d3a4a] text-[#617589] hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-8 flex flex-col gap-8 max-w-7xl mx-auto w-full">
+<!-- Overview Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Total Hours Card -->
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-[#dbe0e6] dark:border-[#2d3a4a] shadow-sm flex flex-col gap-1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-medium text-[#617589]">Total Hours (This Month)</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">timer</span>
+</div>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-black">164h 20m</h3>
+<span class="text-[#078838] text-sm font-bold pb-1 flex items-center">
+<span class="material-symbols-outlined text-sm">trending_up</span> 4%
+                            </span>
+</div>
+</div>
+<!-- Days Present Card -->
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-[#dbe0e6] dark:border-[#2d3a4a] shadow-sm flex flex-col gap-1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-medium text-[#617589]">Days Present</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">event_available</span>
+</div>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-black">21 / 22</h3>
+<span class="text-[#078838] text-sm font-bold pb-1 flex items-center">
+<span class="material-symbols-outlined text-sm">check_circle</span> 95%
+                            </span>
+</div>
+</div>
+<!-- Avg. Clock-In Card -->
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-[#dbe0e6] dark:border-[#2d3a4a] shadow-sm flex flex-col gap-1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-medium text-[#617589]">Avg. Clock-In Time</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">schedule</span>
+</div>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-black">08:55 AM</h3>
+<span class="text-[#e73908] text-sm font-bold pb-1 flex items-center">
+<span class="material-symbols-outlined text-sm">trending_down</span> -2%
+                            </span>
+</div>
+</div>
+</div>
+<!-- Filters & Table Section -->
+<div class="bg-white dark:bg-background-dark rounded-xl border border-[#dbe0e6] dark:border-[#2d3a4a] shadow-sm overflow-hidden flex flex-col">
+<!-- Table Header / Filters -->
+<div class="p-6 border-b border-[#dbe0e6] dark:border-[#2d3a4a] flex flex-wrap items-center justify-between gap-4">
+<div class="flex flex-col gap-1">
+<h4 class="text-lg font-bold">Past Records</h4>
+<p class="text-sm text-[#617589]">October 2023 logs</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<select class="appearance-none bg-[#f0f2f4] dark:bg-[#2d3a4a] border-none rounded-lg px-4 py-2 pr-10 text-sm font-medium focus:ring-2 focus:ring-primary/20 w-48">
+<option>Last 30 Days</option>
+<option>This Month</option>
+<option>Last Month</option>
+<option>Custom Range</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-sm">calendar_today</span>
+</div>
+<button class="flex items-center gap-2 bg-white dark:bg-background-dark border border-[#dbe0e6] dark:border-[#2d3a4a] px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+                                Export
+                            </button>
+</div>
+</div>
+<!-- Attendance Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-gray-50 dark:bg-background-dark border-b border-[#dbe0e6] dark:border-[#2d3a4a]">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589]">Date</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589]">Clock-In</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589]">Clock-Out</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589]">Location</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589]">Total Hours</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589]">Geofence Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dbe0e6] dark:divide-[#2d3a4a]">
+<!-- Entry 1 -->
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm text-[#111418] dark:text-white">Oct 24, 2023</span>
+<span class="text-xs text-[#617589]">Tuesday</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-medium text-sm">08:45 AM</span>
+<span class="text-[10px] bg-[#078838]/10 text-[#078838] px-1.5 py-0.5 rounded font-bold">On-Time</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#111418] dark:text-white">05:15 PM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-sm text-[#617589]">
+<span class="material-symbols-outlined text-sm text-primary">location_on</span>
+                                            Main Office
+                                        </div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">8h 30m</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-[#078838] font-bold text-xs">
+<span class="material-symbols-outlined text-sm">verified</span>
+                                            Verified
+                                        </div>
+</td>
+</tr>
+<!-- Entry 2 -->
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm text-[#111418] dark:text-white">Oct 23, 2023</span>
+<span class="text-xs text-[#617589]">Monday</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-medium text-sm">09:12 AM</span>
+<span class="text-[10px] bg-[#e73908]/10 text-[#e73908] px-1.5 py-0.5 rounded font-bold">Late</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#111418] dark:text-white">06:05 PM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-sm text-[#617589]">
+<span class="material-symbols-outlined text-sm text-primary">home</span>
+                                            Remote (Home)
+                                        </div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">8h 53m</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-[#078838] font-bold text-xs">
+<span class="material-symbols-outlined text-sm">verified</span>
+                                            Verified
+                                        </div>
+</td>
+</tr>
+<!-- Entry 3 -->
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm text-[#111418] dark:text-white">Oct 20, 2023</span>
+<span class="text-xs text-[#617589]">Friday</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-medium text-sm">08:58 AM</span>
+<span class="text-[10px] bg-[#078838]/10 text-[#078838] px-1.5 py-0.5 rounded font-bold">On-Time</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#111418] dark:text-white">05:00 PM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-sm text-[#617589]">
+<span class="material-symbols-outlined text-sm text-primary">corporate_fare</span>
+                                            Client Site
+                                        </div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">8h 02m</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-[#078838] font-bold text-xs">
+<span class="material-symbols-outlined text-sm">verified</span>
+                                            Verified
+                                        </div>
+</td>
+</tr>
+<!-- Entry 4 (Outside Geofence) -->
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-primary/5 transition-colors bg-red-50/20 dark:bg-red-900/5">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm text-[#111418] dark:text-white">Oct 19, 2023</span>
+<span class="text-xs text-[#617589]">Thursday</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-medium text-sm">09:30 AM</span>
+<span class="text-[10px] bg-[#e73908]/10 text-[#e73908] px-1.5 py-0.5 rounded font-bold">Late</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#111418] dark:text-white">04:30 PM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-sm text-[#617589]">
+<span class="material-symbols-outlined text-sm text-red-500">warning</span>
+                                            Unknown Location
+                                        </div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">7h 00m</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-[#e73908] font-bold text-xs">
+<span class="material-symbols-outlined text-sm">error</span>
+                                            Invalid Zone
+                                        </div>
+</td>
+</tr>
+<!-- Entry 5 -->
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm text-[#111418] dark:text-white">Oct 18, 2023</span>
+<span class="text-xs text-[#617589]">Wednesday</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-medium text-sm">08:42 AM</span>
+<span class="text-[10px] bg-[#078838]/10 text-[#078838] px-1.5 py-0.5 rounded font-bold">On-Time</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#111418] dark:text-white">05:30 PM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-sm text-[#617589]">
+<span class="material-symbols-outlined text-sm text-primary">location_on</span>
+                                            Main Office
+                                        </div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">8h 48m</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-[#078838] font-bold text-xs">
+<span class="material-symbols-outlined text-sm">verified</span>
+                                            Verified
+                                        </div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 bg-gray-50 dark:bg-background-dark/80 border-t border-[#dbe0e6] dark:border-[#2d3a4a] flex items-center justify-between">
+<span class="text-sm text-[#617589]">Showing 1-10 of 21 records</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-sm border border-[#dbe0e6] dark:border-[#2d3a4a] rounded-lg bg-white dark:bg-background-dark font-medium disabled:opacity-50" disabled="">Previous</button>
+<button class="px-3 py-1 text-sm border border-primary bg-primary text-white rounded-lg font-medium">1</button>
+<button class="px-3 py-1 text-sm border border-[#dbe0e6] dark:border-[#2d3a4a] rounded-lg bg-white dark:bg-background-dark font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">2</button>
+<button class="px-3 py-1 text-sm border border-[#dbe0e6] dark:border-[#2d3a4a] rounded-lg bg-white dark:bg-background-dark font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">3</button>
+<button class="px-3 py-1 text-sm border border-[#dbe0e6] dark:border-[#2d3a4a] rounded-lg bg-white dark:bg-background-dark font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Next</button>
+</div>
+</div>
+</div>
+<!-- Footer Info -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-4 py-4">
+<div class="flex items-center gap-2 text-[#617589] text-xs">
+<span class="material-symbols-outlined text-sm">shield</span>
+                        All records are verified via encrypted geofencing data.
+                    </div>
+<p class="text-xs text-[#617589]">© 2023 GeoAttend Attendance Management System</p>
+</div>
+</div>
+</main>
+</div>
+</body></html>

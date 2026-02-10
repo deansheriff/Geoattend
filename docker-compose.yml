@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: geoattend
+      POSTGRES_USER: geoattend
+      POSTGRES_PASSWORD: geoattend
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geoattend -d geoattend"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      context: ./server
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgresql://geoattend:geoattend@db:5432/geoattend
+      SESSION_SECRET: change_me
+      CORS_ORIGIN: https://geoattend.sherpackage.com
+      GPS_BUFFER_METERS: 20
+      SESSION_TTL_DAYS: 7
+      RESET_TOKEN_TTL_MIN: 30
+      UPLOADS_DIR: uploads
+      SEED_ON_START: "true"
+      PRISMA_DB_PUSH: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+    expose:
+      - "4000"
+
+  web:
+    build:
+      context: ./web
+      args:
+        VITE_API_BASE_URL: /api
+    depends_on:
+      - server
+    ports:
+      - "8080:80"
+
+volumes:
+  pg_data:
+  uploads:

@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum AttendanceStatus {
+  ON_TIME
+  LATE
+  EARLY_DEPARTURE
+  OUT_OF_BOUNDS
+  MISSING_CLOCK_OUT
+  MULTIPLE_CLOCK_INS
+  UNKNOWN
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  users             User[]
+  locations         Location[]
+  attendanceRecords AttendanceRecord[]
+  shifts            Shift[]
+  auditLogs         AuditLog[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  tenantId     String
+  email        String
+  name         String
+  role         Role     @default(EMPLOYEE)
+  passwordHash String
+  active       Boolean  @default(true)
+  timezone     String   @default("UTC")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  sessions     Session[]
+  resetTokens  PasswordResetToken[]
+  assignments  UserLocationAssignment[]
+  attendance   AttendanceRecord[]
+  shifts       Shift[]
+  auditLogs    AuditLog[] @relation("AuditActor")
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model Session {
+  id         String   @id @default(uuid())
+  userId     String
+  tokenHash  String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  ip         String?
+  userAgent  String?
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model Location {
+  id           String   @id @default(uuid())
+  tenantId     String
+  name         String
+  address      String
+  latitude     Float
+  longitude    Float
+  radiusMeters Int
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdById  String?
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  createdBy    User?    @relation(fields: [createdById], references: [id])
+  assignments  UserLocationAssignment[]
+  attendance   AttendanceRecord[]
+
+  @@index([tenantId])
+}
+
+model UserLocationAssignment {
+  id         String   @id @default(uuid())
+  tenantId   String
+  userId     String
+  locationId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  location   Location @relation(fields: [locationId], references: [id])
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([userId, locationId])
+  @@index([tenantId])
+}
+
+model AttendanceRecord {
+  id              String           @id @default(uuid())
+  tenantId        String
+  userId          String
+  date            DateTime
+  clockInAt       DateTime
+  clockOutAt      DateTime?
+  clockInLat      Float
+  clockInLng      Float
+  clockOutLat     Float?
+  clockOutLng     Float?
+  locationId      String?
+  totalMinutes    Int?
+  breakMinutes    Int @default(0)
+  status          AttendanceStatus @default(UNKNOWN)
+  anomalies       Json?
+  clockInPhoto    String?
+  clockOutPhoto   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
+  location        Location? @relation(fields: [locationId], references: [id])
+  breaks          BreakRecord[]
+
+  @@index([tenantId, userId])
+  @@index([tenantId, date])
+}
+
+model BreakRecord {
+  id                 String   @id @default(uuid())
+  attendanceRecordId String
+  startedAt          DateTime
+  endedAt            DateTime?
+  totalMinutes       Int?
+
+  attendanceRecord   AttendanceRecord @relation(fields: [attendanceRecordId], references: [id])
+
+  @@index([attendanceRecordId])
+}
+
+model Shift {
+  id        String   @id @default(uuid())
+  tenantId  String
+  userId    String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  timezone  String   @default("UTC")
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, userId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  actor      User     @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([tenantId])
+  @@index([actorId])
+}
