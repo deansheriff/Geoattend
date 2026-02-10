@@ -7,9 +7,9 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 if [ "$PRISMA_DB_PUSH" = "true" ]; then
-  npx prisma db push
+  npx prisma db push --skip-generate
 else
-  npx prisma migrate deploy || npx prisma db push
+  npx prisma migrate deploy --skip-generate || npx prisma db push --skip-generate
 fi
 
 if [ "$SEED_ON_START" != "false" ]; then
