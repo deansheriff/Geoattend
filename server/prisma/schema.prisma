@@ -33,6 +33,7 @@ model Tenant {
   attendanceRecords AttendanceRecord[]
   shifts            Shift[]
   auditLogs         AuditLog[]
+  assignments       UserLocationAssignment[]
 }
 
 model User {
@@ -54,6 +55,7 @@ model User {
   attendance   AttendanceRecord[]
   shifts       Shift[]
   auditLogs    AuditLog[] @relation("AuditActor")
+  createdLocations Location[] @relation("LocationCreatedBy")
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -102,7 +104,7 @@ model Location {
   createdById  String?
 
   tenant       Tenant   @relation(fields: [tenantId], references: [id])
-  createdBy    User?    @relation(fields: [createdById], references: [id])
+  createdBy    User?    @relation("LocationCreatedBy", fields: [createdById], references: [id])
   assignments  UserLocationAssignment[]
   attendance   AttendanceRecord[]
 
