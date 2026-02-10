@@ -14,6 +14,7 @@ import { requireAuth } from "./middleware/auth.js";
 import "./types.js";
 
 const app = express();
+app.set("trust proxy", 1);
 
 const uploadsDir = process.env.UPLOADS_DIR || "uploads";
 if (!fs.existsSync(uploadsDir)) {

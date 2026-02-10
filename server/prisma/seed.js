@@ -5,7 +5,7 @@ import path from "path";
 
 const prisma = new PrismaClient();
 
-const seedPath = path.resolve("..", "..", "sample-data", "seed.json");
+const seedPath = path.resolve("prisma", "seed.json");
 const raw = fs.readFileSync(seedPath, "utf-8");
 const seed = JSON.parse(raw);
 

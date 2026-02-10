@@ -1,0 +1,11 @@
+{
+  "tenant": { "name": "Acme Logistics", "slug": "acme" },
+  "users": [
+    { "email": "admin@geoattend.local", "name": "Admin User", "role": "ADMIN" },
+    { "email": "employee@geoattend.local", "name": "Employee User", "role": "EMPLOYEE" }
+  ],
+  "locations": [
+    { "name": "Main Office", "address": "123 Tech Avenue", "latitude": 37.7749, "longitude": -122.4194, "radiusMeters": 300 },
+    { "name": "Warehouse A", "address": "Pier 9", "latitude": 37.808, "longitude": -122.417, "radiusMeters": 250 }
+  ]
+}
