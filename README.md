@@ -54,3 +54,17 @@ Default seed users:
 - Geofencing uses the Haversine formula plus a GPS accuracy buffer (default 20 meters).
 - Times are stored in UTC; per-user time zones are supported.
 - Photo capture is optional and can be enabled in the frontend.
+
+## Bootstrap Admin (if login fails)
+If the seed didn’t run or you need a first admin, use the bootstrap endpoint once.
+
+1. Set `BOOTSTRAP_TOKEN` in `docker-compose.yaml` or your environment.
+2. Call:
+```bash
+curl -X POST https://geoattend.sherpackage.com/api/auth/bootstrap \
+  -H "Content-Type: application/json" \
+  -H "x-bootstrap-token: YOUR_TOKEN" \
+  -d '{"email":"admin@geoattend.local","name":"Admin","password":"Admin123!"}'
+```
+
+This only works when no users exist yet.

@@ -21,6 +21,14 @@ const resetSchema = z.object({
   password: z.string().min(8)
 });
 
+const bootstrapSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1),
+  password: z.string().min(8),
+  tenantName: z.string().min(1).optional(),
+  tenantSlug: z.string().min(1).optional()
+});
+
 router.post("/login", async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -136,6 +144,43 @@ router.post("/reset-password", async (req, res) => {
   });
 
   return res.json({ ok: true });
+});
+
+router.post("/bootstrap", async (req, res) => {
+  const bootstrapToken = process.env.BOOTSTRAP_TOKEN;
+  if (!bootstrapToken || req.headers["x-bootstrap-token"] !== bootstrapToken) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const parsed = bootstrapSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid payload" });
+  }
+
+  const userCount = await prisma.user.count();
+  if (userCount > 0) {
+    return res.status(400).json({ error: "Bootstrap already completed" });
+  }
+
+  const tenant = await prisma.tenant.create({
+    data: {
+      name: parsed.data.tenantName ?? "GeoAttend",
+      slug: parsed.data.tenantSlug ?? "geoattend"
+    }
+  });
+
+  const passwordHash = await bcrypt.hash(parsed.data.password, 10);
+  const admin = await prisma.user.create({
+    data: {
+      tenantId: tenant.id,
+      email: parsed.data.email,
+      name: parsed.data.name,
+      role: "ADMIN",
+      passwordHash
+    }
+  });
+
+  return res.json({ ok: true, admin: { id: admin.id, email: admin.email } });
 });
 
 router.get("/me", requireAuth, async (req, res) => {

@@ -28,6 +28,7 @@ services:
       UPLOADS_DIR: uploads
       SEED_ON_START: "auto"
       PRISMA_DB_PUSH: "true"
+      BOOTSTRAP_TOKEN: change_me_bootstrap
     depends_on:
       db:
         condition: service_healthy
