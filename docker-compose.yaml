@@ -26,7 +26,7 @@ services:
       SESSION_TTL_DAYS: 7
       RESET_TOKEN_TTL_MIN: 30
       UPLOADS_DIR: uploads
-      SEED_ON_START: "true"
+      SEED_ON_START: "auto"
       PRISMA_DB_PUSH: "true"
     depends_on:
       db:
