@@ -103,7 +103,7 @@ router.post("/clock-in", upload.single("photo"), async (req, res) => {
     return res.status(400).json({ error: "Already clocked in" });
   }
 
-  let status = AttendanceStatus.UNKNOWN;
+  let status: AttendanceStatus = AttendanceStatus.UNKNOWN;
   const shift = await prisma.shift.findFirst({
     where: {
       userId: req.user!.id,
