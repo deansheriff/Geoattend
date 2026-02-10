@@ -1,7 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+const API_BASE = BASE_URL.endsWith("/api") ? BASE_URL : `${BASE_URL}/api`;
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
-  const res = await fetch(`${BASE_URL}/api${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
 }
 
 export async function apiFetchForm(path: string, body: FormData) {
-  const res = await fetch(`${BASE_URL}/api${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     credentials: "include",
     body
@@ -31,4 +32,4 @@ export async function apiFetchForm(path: string, body: FormData) {
   return res.json();
 }
 
-export { BASE_URL };
+export { BASE_URL, API_BASE };
