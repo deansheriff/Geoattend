@@ -9,7 +9,8 @@ import { minutesBetween } from "../utils/time.js";
 const router = Router();
 
 const Role = {
-  ADMIN: "ADMIN" as RoleType
+  ADMIN: "ADMIN" as RoleType,
+  EMPLOYEE: "EMPLOYEE" as RoleType
 };
 const AttendanceStatus = {
   LATE: "LATE" as AttendanceStatusType,
