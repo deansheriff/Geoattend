@@ -1,9 +1,11 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 import { forgotPassword, resetPassword } from "../api/auth";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("admin@geoattend.local");
   const [password, setPassword] = useState("Admin123!");
   const [error, setError] = useState<string | null>(null);
@@ -16,10 +18,17 @@ export default function Login() {
     setError(null);
     try {
       await login(email, password);
+      navigate("/", { replace: true });
     } catch (err: any) {
       setError(err.message || "Login failed");
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
   const onForgot = async (e: FormEvent) => {
     e.preventDefault();
