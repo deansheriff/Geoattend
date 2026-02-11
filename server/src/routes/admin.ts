@@ -3,14 +3,18 @@ import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/requireRole.js";
-import type { AttendanceRecord } from "@prisma/client";
-import pkg from "@prisma/client";
+import type { AttendanceRecord, AttendanceStatus as AttendanceStatusType, Role as RoleType } from "@prisma/client";
 import { minutesBetween } from "../utils/time.js";
 
 const router = Router();
 
-const { Prisma } = pkg as any;
-const { Role, AttendanceStatus } = Prisma;
+const Role = {
+  ADMIN: "ADMIN" as RoleType
+};
+const AttendanceStatus = {
+  LATE: "LATE" as AttendanceStatusType,
+  EARLY_DEPARTURE: "EARLY_DEPARTURE" as AttendanceStatusType
+};
 
 router.use(requireAuth, requireRole(Role.ADMIN));
 
@@ -26,7 +30,7 @@ router.post("/employees", async (req, res) => {
   const schema = z.object({
     name: z.string().min(1),
     email: z.string().email(),
-    role: z.nativeEnum(Role).optional(),
+    role: z.enum(["ADMIN", "EMPLOYEE"]).optional(),
     timezone: z.string().default("UTC"),
     password: z.string().min(8).optional()
   });
@@ -194,7 +198,7 @@ router.get("/attendance/summary", async (req, res) => {
 
 router.get("/analytics", async (req, res) => {
   const employees = await prisma.user.findMany({
-    where: { tenantId: req.user!.tenantId, role: Role.EMPLOYEE }
+    where: { tenantId: req.user!.tenantId, role: "EMPLOYEE" }
   });
 
   const attendance = await prisma.attendanceRecord.findMany({

@@ -5,13 +5,16 @@ import { requireAuth } from "../middleware/auth.js";
 import { withinRadius } from "../utils/geo.js";
 import { minutesBetween, nowUtc, parseLocalTimeToDate, toUserDay } from "../utils/time.js";
 import type { AttendanceStatus as AttendanceStatusType } from "@prisma/client";
-import pkg from "@prisma/client";
 import multer from "multer";
 
 const router = Router();
 const upload = multer({ dest: process.env.UPLOADS_DIR || "uploads" });
-const { Prisma } = pkg as any;
-const { AttendanceStatus } = Prisma;
+const AttendanceStatus = {
+  UNKNOWN: "UNKNOWN" as AttendanceStatusType,
+  LATE: "LATE" as AttendanceStatusType,
+  ON_TIME: "ON_TIME" as AttendanceStatusType,
+  EARLY_DEPARTURE: "EARLY_DEPARTURE" as AttendanceStatusType
+};
 
 router.use(requireAuth);
 
