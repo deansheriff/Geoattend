@@ -3,10 +3,14 @@ import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/requireRole.js";
-import { AttendanceRecord, AttendanceStatus, Role } from "@prisma/client";
+import type { AttendanceRecord } from "@prisma/client";
+import pkg from "@prisma/client";
 import { minutesBetween } from "../utils/time.js";
 
 const router = Router();
+
+const { Prisma } = pkg as any;
+const { Role, AttendanceStatus } = Prisma;
 
 router.use(requireAuth, requireRole(Role.ADMIN));
 

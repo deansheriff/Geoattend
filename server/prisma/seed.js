@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
 import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 
+const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
 const seedPath = path.resolve("prisma", "seed.json");

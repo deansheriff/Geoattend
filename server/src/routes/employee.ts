@@ -4,11 +4,14 @@ import { prisma } from "../prisma.js";
 import { requireAuth } from "../middleware/auth.js";
 import { withinRadius } from "../utils/geo.js";
 import { minutesBetween, nowUtc, parseLocalTimeToDate, toUserDay } from "../utils/time.js";
-import { AttendanceStatus } from "@prisma/client";
+import type { AttendanceStatus as AttendanceStatusType } from "@prisma/client";
+import pkg from "@prisma/client";
 import multer from "multer";
 
 const router = Router();
 const upload = multer({ dest: process.env.UPLOADS_DIR || "uploads" });
+const { Prisma } = pkg as any;
+const { AttendanceStatus } = Prisma;
 
 router.use(requireAuth);
 
@@ -103,7 +106,7 @@ router.post("/clock-in", upload.single("photo"), async (req, res) => {
     return res.status(400).json({ error: "Already clocked in" });
   }
 
-  let status: AttendanceStatus = AttendanceStatus.UNKNOWN;
+  let status: AttendanceStatusType = AttendanceStatus.UNKNOWN;
   const shift = await prisma.shift.findFirst({
     where: {
       userId: req.user!.id,

@@ -13,7 +13,7 @@ RUN npx prisma generate && npm run build
 FROM node:20-bullseye-slim
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY prisma ./prisma
 COPY package.json ./package.json
