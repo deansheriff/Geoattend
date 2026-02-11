@@ -30,6 +30,7 @@ Backend (`server/.env`):
 - `SESSION_TTL_DAYS`
 - `RESET_TOKEN_TTL_MIN`
 - `UPLOADS_DIR`
+- `MISSING_CLOCK_OUT_HOURS`
 
 Frontend (`web/.env`):
 - `VITE_API_BASE_URL`

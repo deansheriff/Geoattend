@@ -1,25 +1,45 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { useEffect, useState } from "react";
+import { apiFetch, ROOT_URL } from "../api/client";
 
 const navItems = [
   { label: "Dashboard", to: "/admin", icon: "dashboard" },
   { label: "Employees", to: "/admin/employees", icon: "groups" },
-  { label: "Locations", to: "/admin/locations", icon: "explore" }
+  { label: "Locations", to: "/admin/locations", icon: "explore" },
+  { label: "Assignments", to: "/admin/assignments", icon: "assignment" },
+  { label: "Shifts", to: "/admin/shifts", icon: "schedule" },
+  { label: "Reports", to: "/admin/reports", icon: "summarize" },
+  { label: "Alerts", to: "/admin/alerts", icon: "notifications" },
+  { label: "Settings", to: "/admin/settings", icon: "settings" }
 ];
 
 export default function AdminLayout({ title, children }: { title: string; children: React.ReactNode }) {
   const { logout, user } = useAuth();
   const location = useLocation();
+  const [tenant, setTenant] = useState<{ name?: string; address?: string; logoPath?: string } | null>(null);
+
+  useEffect(() => {
+    apiFetch("/admin/settings")
+      .then(setTenant)
+      .catch(() => setTenant(null));
+  }, []);
+
+  const logoUrl = tenant?.logoPath ? `${ROOT_URL}/uploads/${tenant.logoPath}` : null;
 
   return (
     <div className="min-h-screen flex bg-background-light">
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
         <div className="p-6 flex items-center gap-3">
-          <div className="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
-            <span className="material-symbols-outlined">location_on</span>
-          </div>
+          {logoUrl ? (
+            <img src={logoUrl} alt="Company logo" className="size-10 rounded-lg object-cover border border-slate-200" />
+          ) : (
+            <div className="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+              <span className="material-symbols-outlined">location_on</span>
+            </div>
+          )}
           <div>
-            <h1 className="font-bold text-lg leading-tight">GeoAttend</h1>
+            <h1 className="font-bold text-lg leading-tight">{tenant?.name || "GeoAttend"}</h1>
             <p className="text-xs text-slate-500">Admin Console</p>
           </div>
         </div>

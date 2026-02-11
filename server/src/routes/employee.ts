@@ -261,4 +261,34 @@ router.post("/break-end", async (req, res) => {
   res.json({ ok: true });
 });
 
+router.get("/export", async (req, res) => {
+  const from = req.query.from ? new Date(String(req.query.from)) : undefined;
+  const to = req.query.to ? new Date(String(req.query.to)) : undefined;
+
+  const records = await prisma.attendanceRecord.findMany({
+    where: {
+      tenantId: req.user!.tenantId,
+      userId: req.user!.id,
+      date: { gte: from, lte: to }
+    },
+    include: { location: true }
+  });
+
+  const header = "date,clock_in,clock_out,total_minutes,location\n";
+  const rows = records.map((r: any) => {
+    return [
+      r.date.toISOString(),
+      r.clockInAt.toISOString(),
+      r.clockOutAt ? r.clockOutAt.toISOString() : "",
+      r.totalMinutes ?? "",
+      r.location?.name ?? ""
+    ].join(",");
+  });
+
+  const csv = header + rows.join("\n");
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", "attachment; filename=attendance.csv");
+  res.send(csv);
+});
+
 export default router;

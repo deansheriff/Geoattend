@@ -5,6 +5,11 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLocations from "./pages/admin/AdminLocations";
 import AdminEmployees from "./pages/admin/AdminEmployees";
+import AdminAssignments from "./pages/admin/AdminAssignments";
+import AdminShifts from "./pages/admin/AdminShifts";
+import AdminReports from "./pages/admin/AdminReports";
+import AdminAlerts from "./pages/admin/AdminAlerts";
+import AdminSettings from "./pages/admin/AdminSettings";
 import EmployeeClock from "./pages/employee/EmployeeClock";
 import EmployeeHistory from "./pages/employee/EmployeeHistory";
 import AdminCreateOpen from "./pages/AdminCreateOpen";
@@ -35,6 +40,46 @@ export default function App() {
         element={
           <ProtectedRoute role="ADMIN">
             <AdminLocations />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/assignments"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <AdminAssignments />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/shifts"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <AdminShifts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/reports"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <AdminReports />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/alerts"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <AdminAlerts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <AdminSettings />
           </ProtectedRoute>
         }
       />

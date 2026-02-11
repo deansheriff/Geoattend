@@ -23,7 +23,19 @@ Base URL: `/api`
 - `DELETE /admin/locations/:id`
 - `GET /admin/locations/:id/assignments`
 - `POST /admin/locations/:id/assignments`
+- `GET /admin/assignments`
+- `POST /admin/assignments`
+- `DELETE /admin/assignments/:id`
 - `GET /admin/employees/:id/locations`
+- `GET /admin/shifts`
+- `POST /admin/shifts`
+- `PATCH /admin/shifts/:id`
+- `DELETE /admin/shifts/:id`
+- `GET /admin/alerts`
+- `GET /admin/export`
+- `GET /admin/settings`
+- `PATCH /admin/settings`
+- `POST /admin/settings/logo`
 
 ## Employee
 - `GET /employee/attendance`
@@ -32,6 +44,7 @@ Base URL: `/api`
 - `POST /employee/clock-out`
 - `POST /employee/break-start`
 - `POST /employee/break-end`
+- `GET /employee/export`
 
 ## Utilities
 - `GET /health`

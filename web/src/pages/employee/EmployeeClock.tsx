@@ -17,8 +17,12 @@ export default function EmployeeClock() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locations, setLocations] = useState<any[]>([]);
   const [status, setStatus] = useState<any>(null);
+  const [breakActive, setBreakActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [photo, setPhoto] = useState<File | null>(null);
+
+  const enablePhoto = String(import.meta.env.VITE_ENABLE_PHOTO_CAPTURE || "false") === "true";
 
   useEffect(() => {
     apiFetch("/employee/locations").then(setLocations);
@@ -64,10 +68,27 @@ export default function EmployeeClock() {
       const form = new FormData();
       form.append("latitude", String(coords.lat));
       form.append("longitude", String(coords.lng));
+      if (enablePhoto && photo) {
+        form.append("photo", photo);
+      }
       const res = await apiFetchForm(`/employee/clock-${type}`, form);
       setStatus({ active: type === "in", record: res.record });
+      setBreakActive(false);
     } catch (err: any) {
       setError(err.message || "Clock action failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onBreak = async (type: "start" | "end") => {
+    setError(null);
+    setLoading(true);
+    try {
+      await apiFetch(`/employee/break-${type}`, { method: "POST" });
+      setBreakActive(type === "start");
+    } catch (err: any) {
+      setError(err.message || "Break action failed");
     } finally {
       setLoading(false);
     }
@@ -135,6 +156,18 @@ export default function EmployeeClock() {
                 Clock Out
               </button>
             </div>
+            {enablePhoto && (
+              <div className="pt-2">
+                <label className="text-xs font-semibold text-slate-500">Photo (optional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+                  className="mt-1 block text-sm"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -145,6 +178,22 @@ export default function EmployeeClock() {
             {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </div>
           <div className="text-xs text-slate-500">Live location updates enabled</div>
+          <div className="pt-2 space-y-2">
+            <button
+              disabled={!status?.active || breakActive || loading}
+              onClick={() => onBreak("start")}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold disabled:opacity-50"
+            >
+              Start Break
+            </button>
+            <button
+              disabled={!status?.active || !breakActive || loading}
+              onClick={() => onBreak("end")}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold disabled:opacity-50"
+            >
+              End Break
+            </button>
+          </div>
         </div>
       </div>
     </EmployeeLayout>

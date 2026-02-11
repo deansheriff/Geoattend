@@ -4,6 +4,7 @@
 - View real-time attendance status.
 - Monitor late arrivals and early departures.
 - Export attendance data by date range.
+- Quick links to Employees, Locations, Assignments, Shifts, Reports, Alerts, Settings.
 
 ## Employees
 - Create, edit, deactivate employees.
@@ -20,5 +21,8 @@
 - Export to CSV.
 
 ## Alerts
-- System flags anomalies (outside geofence, missing clock-out, multiple clock-ins).
-- Review anomaly logs in reports.
+- System flags missing clock-outs, late arrivals, and early departures.
+- Review alert list and drill into affected records.
+
+## Settings
+- Update company name, address, and logo.
