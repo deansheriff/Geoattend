@@ -81,6 +81,13 @@ export default function AdminLocations() {
     loadAll().catch(() => setError("Failed to refresh locations"));
   };
 
+  const onDelete = async (id: string) => {
+    setError(null);
+    await apiFetch(`/admin/locations/${id}`, { method: "DELETE" });
+    if (selected?.id === id) setSelected(null);
+    loadAll().catch(() => setError("Failed to refresh locations"));
+  };
+
   return (
     <AdminLayout title="Location Management">
       <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
@@ -100,23 +107,47 @@ export default function AdminLocations() {
           </div>
           <div className="p-4 space-y-3 max-h-[640px] overflow-y-auto">
             {locations.map((loc) => (
-              <button
+              <div
                 key={loc.id}
-                onClick={() => setSelected(loc)}
-                className={`w-full text-left rounded-xl border p-4 transition ${
+                className={`w-full rounded-xl border p-4 transition ${
                   selected?.id === loc.id
                     ? "border-primary bg-primary/5"
                     : "border-slate-200 hover:border-slate-300"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-bold">{loc.name}</div>
-                    <div className="text-xs text-slate-500">{loc.address}</div>
+                <button onClick={() => setSelected(loc)} className="w-full text-left">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-bold">{loc.name}</div>
+                      <div className="text-xs text-slate-500">{loc.address}</div>
+                    </div>
+                    <span className="text-xs font-semibold text-slate-500">{loc.radiusMeters}m</span>
                   </div>
-                  <span className="text-xs font-semibold text-slate-500">{loc.radiusMeters}m</span>
+                </button>
+                <div className="mt-3 flex items-center gap-3">
+                  <button
+                    onClick={() =>
+                      setForm({
+                        id: loc.id,
+                        name: loc.name,
+                        address: loc.address,
+                        latitude: String(loc.latitude),
+                        longitude: String(loc.longitude),
+                        radiusMeters: String(loc.radiusMeters)
+                      })
+                    }
+                    className="text-xs font-bold text-primary hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => onDelete(loc.id)}
+                    className="text-xs font-bold text-red-600 hover:underline"
+                  >
+                    Delete
+                  </button>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>

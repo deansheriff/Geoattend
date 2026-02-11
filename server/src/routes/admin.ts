@@ -367,9 +367,13 @@ router.get("/settings", async (req, res) => {
 });
 
 router.patch("/settings", async (req, res) => {
+  const emptyToUndefined = (val: unknown) => {
+    if (typeof val === "string" && val.trim() === "") return undefined;
+    return val;
+  };
   const schema = z.object({
-    name: z.string().min(1).optional(),
-    address: z.string().min(1).optional()
+    name: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    address: z.preprocess(emptyToUndefined, z.string().min(1).optional())
   });
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Invalid payload" });

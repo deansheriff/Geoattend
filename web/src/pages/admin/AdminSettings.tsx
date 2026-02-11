@@ -72,7 +72,10 @@ export default function AdminSettings() {
               className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
             />
           </div>
-          <button onClick={onSave} className="rounded-lg bg-primary text-white py-2 text-sm font-bold">
+          <button
+            onClick={onSave}
+            className="inline-flex items-center justify-center rounded-lg bg-primary text-white py-2 px-4 text-sm font-bold"
+          >
             Save Changes
           </button>
           {status && <p className="text-sm text-slate-500">{status}</p>}
