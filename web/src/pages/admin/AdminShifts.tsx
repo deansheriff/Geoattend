@@ -27,6 +27,7 @@ export default function AdminShifts() {
     overwrite: true
   });
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState("");
 
   const loadAll = async () => {
@@ -46,6 +47,7 @@ export default function AdminShifts() {
 
   const onCreate = async () => {
     setError(null);
+    setNotice(null);
     if (!form.userId) {
       setError("Select an employee");
       return;
@@ -68,6 +70,7 @@ export default function AdminShifts() {
       });
       persistLastWeek(form.userId, form);
       loadAll().catch(() => setError("Failed to refresh shifts"));
+      setNotice("Weekly shift added.");
     } catch (err: any) {
       setError(err.message || "Failed to add shifts");
     }
@@ -241,6 +244,7 @@ export default function AdminShifts() {
               Overwrite existing shifts for selected days
             </label>
             {error && <p className="text-sm text-red-600">{error}</p>}
+            {notice && <p className="text-sm text-green-600">{notice}</p>}
             <button onClick={onCreate} className="w-full rounded-lg bg-primary text-white py-2 text-sm font-bold">
               Add Weekly Shift
             </button>

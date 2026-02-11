@@ -9,6 +9,7 @@ const navItems = [
   { label: "Locations", to: "/admin/locations", icon: "explore" },
   { label: "Assignments", to: "/admin/assignments", icon: "assignment" },
   { label: "Shifts", to: "/admin/shifts", icon: "schedule" },
+  { label: "Shift Overview", to: "/admin/shifts/overview", icon: "calendar_month" },
   { label: "Reports", to: "/admin/reports", icon: "summarize" },
   { label: "Alerts", to: "/admin/alerts", icon: "notifications" },
   { label: "Settings", to: "/admin/settings", icon: "settings" }

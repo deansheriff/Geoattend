@@ -7,6 +7,7 @@ import AdminLocations from "./pages/admin/AdminLocations";
 import AdminEmployees from "./pages/admin/AdminEmployees";
 import AdminAssignments from "./pages/admin/AdminAssignments";
 import AdminShifts from "./pages/admin/AdminShifts";
+import AdminShiftOverview from "./pages/admin/AdminShiftOverview";
 import AdminReports from "./pages/admin/AdminReports";
 import AdminAlerts from "./pages/admin/AdminAlerts";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -56,6 +57,14 @@ export default function App() {
         element={
           <ProtectedRoute role="ADMIN">
             <AdminShifts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/shifts/overview"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <AdminShiftOverview />
           </ProtectedRoute>
         }
       />
