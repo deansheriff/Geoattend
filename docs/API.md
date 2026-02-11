@@ -29,6 +29,7 @@ Base URL: `/api`
 - `GET /admin/employees/:id/locations`
 - `GET /admin/shifts`
 - `POST /admin/shifts`
+- `POST /admin/shifts/bulk`
 - `PATCH /admin/shifts/:id`
 - `DELETE /admin/shifts/:id`
 - `GET /admin/alerts`

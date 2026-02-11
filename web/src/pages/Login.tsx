@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 import { forgotPassword, resetPassword } from "../api/auth";
+import logo from "../assets/kameleon.png";
 
 export default function Login() {
   const { login, user } = useAuth();
@@ -61,9 +62,7 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl border border-slate-200 p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="size-10 rounded-lg bg-primary text-white flex items-center justify-center">
-            <span className="material-symbols-outlined">location_on</span>
-          </div>
+          <img src={logo} alt="Kameleon" className="h-10 w-auto" />
           <div>
             <h1 className="text-2xl font-bold">GeoAttend</h1>
             <p className="text-xs text-slate-500">Location-Based Attendance</p>

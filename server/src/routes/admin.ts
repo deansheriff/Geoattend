@@ -444,6 +444,43 @@ router.post("/shifts", async (req, res) => {
   res.json(shift);
 });
 
+router.post("/shifts/bulk", async (req, res) => {
+  const schema = z.object({
+    userId: z.string().uuid(),
+    days: z.array(z.number().int().min(0).max(6)).min(1),
+    startTime: z.string().min(3),
+    endTime: z.string().min(3),
+    timezone: z.string().optional(),
+    overwrite: z.boolean().optional()
+  });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "Invalid payload" });
+
+  if (parsed.data.overwrite) {
+    await prisma.shift.deleteMany({
+      where: {
+        tenantId: req.user!.tenantId,
+        userId: parsed.data.userId,
+        dayOfWeek: { in: parsed.data.days }
+      }
+    });
+  }
+
+  const created = await prisma.shift.createMany({
+    data: parsed.data.days.map((day) => ({
+      tenantId: req.user!.tenantId,
+      userId: parsed.data.userId,
+      dayOfWeek: day,
+      startTime: parsed.data.startTime,
+      endTime: parsed.data.endTime,
+      timezone: parsed.data.timezone || "UTC"
+    })),
+    skipDuplicates: true
+  });
+
+  res.json({ ok: true, created: created.count });
+});
+
 router.patch("/shifts/:id", async (req, res) => {
   const schema = z.object({
     dayOfWeek: z.number().int().min(0).max(6).optional(),
