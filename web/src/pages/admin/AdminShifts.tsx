@@ -46,23 +46,31 @@ export default function AdminShifts() {
 
   const onCreate = async () => {
     setError(null);
+    if (!form.userId) {
+      setError("Select an employee");
+      return;
+    }
     if (form.days.length === 0) {
       setError("Select at least one day");
       return;
     }
-    await apiFetch("/admin/shifts/bulk", {
-      method: "POST",
-      body: JSON.stringify({
-        userId: form.userId,
-        days: form.days,
-        startTime: form.startTime,
-        endTime: form.endTime,
-        timezone: form.timezone,
-        overwrite: form.overwrite
-      })
-    });
-    persistLastWeek(form.userId, form);
-    loadAll().catch(() => setError("Failed to refresh shifts"));
+    try {
+      await apiFetch("/admin/shifts/bulk", {
+        method: "POST",
+        body: JSON.stringify({
+          userId: form.userId,
+          days: form.days,
+          startTime: form.startTime,
+          endTime: form.endTime,
+          timezone: form.timezone,
+          overwrite: form.overwrite
+        })
+      });
+      persistLastWeek(form.userId, form);
+      loadAll().catch(() => setError("Failed to refresh shifts"));
+    } catch (err: any) {
+      setError(err.message || "Failed to add shifts");
+    }
   };
 
   const onDelete = async (id: string) => {
