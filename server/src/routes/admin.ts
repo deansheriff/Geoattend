@@ -290,13 +290,13 @@ router.get("/alerts", async (req, res) => {
   });
 
   const alerts = [
-    ...missingClockOut.map((record) => ({
+    ...missingClockOut.map((record: any) => ({
       type: "MISSING_CLOCK_OUT",
       severity: "high",
       message: "Missing clock-out",
       record
     })),
-    ...lateOrEarly.map((record) => ({
+    ...lateOrEarly.map((record: any) => ({
       type: record.status,
       severity: record.status === AttendanceStatus.LATE ? "medium" : "low",
       message: record.status === AttendanceStatus.LATE ? "Late arrival" : "Early departure",
