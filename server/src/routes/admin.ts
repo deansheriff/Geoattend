@@ -84,8 +84,9 @@ router.patch("/employees/:id/deactivate", async (req, res) => {
 });
 
 router.get("/locations", async (req, res) => {
+  const includeInactive = String(req.query.includeInactive || "false") === "true";
   const locations = await prisma.location.findMany({
-    where: { tenantId: req.user!.tenantId },
+    where: { tenantId: req.user!.tenantId, ...(includeInactive ? {} : { active: true }) },
     orderBy: { createdAt: "desc" }
   });
   res.json(locations);
@@ -132,8 +133,11 @@ router.patch("/locations/:id", async (req, res) => {
 });
 
 router.delete("/locations/:id", async (req, res) => {
-  await prisma.location.delete({ where: { id: req.params.id } });
-  res.json({ ok: true });
+  await prisma.location.update({
+    where: { id: req.params.id },
+    data: { active: false }
+  });
+  res.json({ ok: true, deactivated: true });
 });
 
 router.get("/locations/:id/assignments", async (req, res) => {
