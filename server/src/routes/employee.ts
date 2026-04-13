@@ -19,9 +19,9 @@ const AttendanceStatus = {
 router.use(requireAuth);
 
 const clockSchema = z.object({
-  latitude: z.number(),
-  longitude: z.number(),
-  accuracy: z.number().optional()
+  latitude: z.coerce.number(),
+  longitude: z.coerce.number(),
+  accuracy: z.coerce.number().optional()
 });
 
 router.get("/attendance", async (req, res) => {
