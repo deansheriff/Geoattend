@@ -58,26 +58,21 @@ export default function AdminLocations() {
       longitude: Number(form.longitude),
       radiusMeters: Number(form.radiusMeters)
     };
-    if (form.id) {
-      await apiFetch(`/admin/locations/${form.id}`, {
-        method: "PATCH",
-        body: JSON.stringify(payload)
-      });
-    } else {
-      await apiFetch("/admin/locations", {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
+    try {
+        if (form.id) {
+          await apiFetch(`/admin/locations/${form.id}`, { method: "PATCH", body: JSON.stringify(payload) });
+        } else {
+          await apiFetch("/admin/locations", { method: "POST", body: JSON.stringify(payload) });
+        }
+        resetForm();
+        loadAll().catch(() => setError("Failed to refresh locations"));
+    } catch {
+        setError("Failed to save location");
     }
-    resetForm();
-    loadAll().catch(() => setError("Failed to refresh locations"));
   };
 
   const onDeactivate = async (id: string) => {
-    await apiFetch(`/admin/locations/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ active: false })
-    });
+    await apiFetch(`/admin/locations/${id}`, { method: "PATCH", body: JSON.stringify({ active: false }) });
     loadAll().catch(() => setError("Failed to refresh locations"));
   };
 
@@ -89,175 +84,164 @@ export default function AdminLocations() {
   };
 
   return (
-    <AdminLayout title="Location Management">
-      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold">Geofences</h3>
-              <p className="text-xs text-slate-500">{locations.length} active zones</p>
-            </div>
-            <button
-              onClick={resetForm}
-              className="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white"
-            >
-              <span className="material-symbols-outlined text-sm">add</span>
-              Add New
-            </button>
-          </div>
-          <div className="p-4 space-y-3 max-h-[640px] overflow-y-auto">
-            {locations.map((loc) => (
-              <div
-                key={loc.id}
-                className={`w-full rounded-xl border p-4 transition ${
-                  selected?.id === loc.id
-                    ? "border-primary bg-primary/5"
-                    : "border-slate-200 hover:border-slate-300"
-                }`}
-              >
-                <button onClick={() => setSelected(loc)} className="w-full text-left">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-bold">{loc.name}</div>
-                      <div className="text-xs text-slate-500">{loc.address}</div>
-                    </div>
-                    <span className="text-xs font-semibold text-slate-500">{loc.radiusMeters}m</span>
-                  </div>
-                </button>
-                <div className="mt-3 flex items-center gap-3">
-                  <button
-                    onClick={() =>
-                      setForm({
-                        id: loc.id,
-                        name: loc.name,
-                        address: loc.address,
-                        latitude: String(loc.latitude),
-                        longitude: String(loc.longitude),
-                        radiusMeters: String(loc.radiusMeters)
-                      })
-                    }
-                    className="text-xs font-bold text-primary hover:underline"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => onDelete(loc.id)}
-                    className="text-xs font-bold text-red-600 hover:underline"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+    <AdminLayout title="Locations">
+      <div className="mb-10 flex justify-between items-end">
+        <div className="max-w-2xl">
+          <h1 className="text-5xl font-black font-display text-primary tracking-tighter mb-2">Location Management</h1>
+          <p className="text-primary/60 text-lg">Define geofences and physical premises where employees can clock in.</p>
         </div>
+      </div>
 
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden min-h-[420px]">
-            <MapContainer center={center as any} zoom={13} className="h-[420px] w-full">
-              <TileLayer
-                attribution="&copy; OpenStreetMap"
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {locations.map((loc) => (
-                <Circle
-                  key={loc.id}
-                  center={[loc.latitude, loc.longitude] as any}
-                  radius={loc.radiusMeters}
-                  pathOptions={{ color: loc.id === selected?.id ? "#2b8cee" : "#10b981" }}
-                />
-              ))}
-              {locations.map((loc) => (
-                <Marker key={`${loc.id}-marker`} position={[loc.latitude, loc.longitude] as any} icon={defaultIcon}>
-                  <Popup>{loc.name}</Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
-
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-bold mb-3">{form.id ? "Edit Location" : "Add Location"}</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-semibold text-slate-500">Name</label>
+      <div className="grid grid-cols-1 xl:grid-cols-[400px_1fr] gap-8 font-display">
+        {/* Left Side: List & Form */}
+        <div className="flex flex-col gap-8 h-auto xl:h-[calc(100vh-200px)]">
+          {/* Location Form */}
+          <div className="bg-surface-container-low rounded-[2rem] border border-black/5 shadow-sm p-8 flex-shrink-0">
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-primary tracking-tight">{form.id ? "Edit Geofence" : "Create New"}</h3>
+                {form.id && (
+                    <button onClick={resetForm} className="text-xs font-bold text-accent uppercase tracking-widest hover:underline">Cancel</button>
+                )}
+            </div>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-primary/50 ml-4">Location Name</label>
                 <input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                  placeholder="e.g. Headquarters"
+                  className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all"
                 />
               </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-500">Address</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-primary/50 ml-4">Address</label>
                 <input
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
-                  className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                  placeholder="123 Main St..."
+                  className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-slate-500">Latitude</label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-primary/50 ml-4">Lat</label>
                   <input
                     value={form.latitude}
                     onChange={(e) => setForm({ ...form, latitude: e.target.value })}
-                    className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                    className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all"
                   />
                 </div>
-                <div>
-                  <label className="text-xs font-semibold text-slate-500">Longitude</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-primary/50 ml-4">Lng</label>
                   <input
                     value={form.longitude}
                     onChange={(e) => setForm({ ...form, longitude: e.target.value })}
-                    className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                    className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all"
                   />
                 </div>
               </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-500">Radius (meters)</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-primary/50 ml-4">Radius (m)</label>
                 <input
                   value={form.radiusMeters}
                   onChange={(e) => setForm({ ...form, radiusMeters: e.target.value })}
-                  className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                  className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all"
                 />
               </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
-              <button onClick={onSubmit} className="w-full rounded-lg bg-primary text-white py-2 text-sm font-bold">
-                {form.id ? "Save Changes" : "Create Location"}
-              </button>
-              {form.id && (
-                <button
-                  onClick={() => onDeactivate(form.id)}
-                  className="w-full rounded-lg border border-red-200 text-red-600 py-2 text-sm font-bold"
-                >
-                  Deactivate Location
+              
+              {error && <div className="text-sm font-bold text-error bg-error-container p-4 rounded-xl flex items-center gap-2"><span className="material-symbols-outlined text-[18px]">error</span> {error}</div>}
+              
+              <div className="pt-4 flex gap-3 flex-col xl:flex-row">
+                <button onClick={onSubmit} className="w-full rounded-full bg-[#E69D45] text-white py-4 text-xs tracking-widest uppercase font-bold shadow-xl shadow-[#E69D45]/20 hover:scale-[1.02] active:scale-95 transition-all">
+                  {form.id ? "Save" : "Create"}
                 </button>
-              )}
+                {form.id && (
+                  <button onClick={() => onDeactivate(form.id)} className="w-full xl:w-auto px-6 rounded-full bg-surface-container-highest text-error font-bold text-xs uppercase tracking-widest hover:bg-error-container transition-all py-4 xl:py-0">
+                    Disable
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
-          {selected && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-lg font-bold">Selected Location</h3>
-              <p className="text-sm text-slate-500">{selected.name}</p>
-              <div className="mt-3 text-xs text-slate-500">Address: {selected.address}</div>
-              <div className="text-xs text-slate-500">Radius: {selected.radiusMeters}m</div>
-              <button
-                onClick={() =>
-                  setForm({
-                    id: selected.id,
-                    name: selected.name,
-                    address: selected.address,
-                    latitude: String(selected.latitude),
-                    longitude: String(selected.longitude),
-                    radiusMeters: String(selected.radiusMeters)
-                  })
-                }
-                className="mt-4 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold"
-              >
-                Edit Selected
-              </button>
+          {/* List of Locations */}
+          <div className="bg-surface-container-low rounded-[2rem] border border-black/5 shadow-sm overflow-hidden flex flex-col flex-1 min-h-[300px]">
+            <div className="p-6 border-b border-primary/5">
+                <h3 className="text-xl font-bold text-primary tracking-tight">Saved Regions</h3>
             </div>
-          )}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {locations.length === 0 && (
+                <p className="text-xs uppercase tracking-widest font-bold text-primary/30 text-center py-8">No regions created.</p>
+              )}
+              {locations.map((loc) => (
+                <div
+                  key={loc.id}
+                  className={`rounded-2xl p-4 transition-all cursor-pointer group flex justify-between items-center ${
+                    selected?.id === loc.id
+                      ? "bg-secondary-container text-on-secondary-container ring-1 ring-secondary/20"
+                      : "bg-surface hover:bg-surface-container border border-primary/5"
+                  }`}
+                  onClick={() => setSelected(loc)}
+                >
+                  <div>
+                    <div className="font-bold tracking-tight">{loc.name}</div>
+                    <div className="text-[10px] font-semibold opacity-70 mt-0.5 max-w-[200px] truncate">{loc.address}</div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setForm({ id: loc.id, name: loc.name, address: loc.address, latitude: String(loc.latitude), longitude: String(loc.longitude), radiusMeters: String(loc.radiusMeters) });
+                        }}
+                        className="p-1.5 rounded-full hover:bg-black/10 transition-colors opacity-0 group-hover:opacity-100"
+                        title="Edit Region"
+                      >
+                         <span className="material-symbols-outlined text-[16px]">edit</span>
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(loc.id); }}
+                        className="p-1.5 rounded-full hover:bg-error-container hover:text-error transition-colors opacity-0 group-hover:opacity-100"
+                        title="Delete Region"
+                      >
+                         <span className="material-symbols-outlined text-[16px]">delete</span>
+                      </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side: Map */}
+        <div className="bg-surface-container-low rounded-[2rem] border border-black/5 overflow-hidden shadow-sm h-[500px] xl:h-auto relative z-0">
+          <MapContainer center={center as any} zoom={13} className="h-full w-full z-0">
+            <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            />
+            {locations.map((loc) => (
+              <Circle
+                key={loc.id}
+                center={[loc.latitude, loc.longitude] as any}
+                radius={loc.radiusMeters}
+                pathOptions={{ 
+                    color: loc.id === selected?.id ? "#E69D45" : "#3a6846", 
+                    weight: loc.id === selected?.id ? 3 : 1, 
+                    fillColor: loc.id === selected?.id ? "#E69D45" : "#3a6846", 
+                    fillOpacity: loc.id === selected?.id ? 0.3 : 0.1 
+                }}
+              />
+            ))}
+            {locations.map((loc) => (
+              <Marker key={`${loc.id}-marker`} position={[loc.latitude, loc.longitude] as any} icon={defaultIcon}>
+                <Popup>
+                  <div className="font-bold font-display text-primary">{loc.name}</div>
+                  <div className="text-xs text-primary/60">{loc.radiusMeters}m radius</div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
         </div>
       </div>
     </AdminLayout>

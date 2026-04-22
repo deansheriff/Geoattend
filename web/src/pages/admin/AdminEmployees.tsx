@@ -12,26 +12,14 @@ type Employee = {
 };
 
 type Toast = { message: string; type: "success" | "error" };
-
 type DrawerMode = "add" | "edit" | "reset-password" | null;
 
 const TIMEZONES = [
-  "UTC",
-  "Europe/London",
-  "Europe/Paris",
-  "Europe/Berlin",
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "Asia/Dubai",
-  "Asia/Karachi",
-  "Asia/Kolkata",
-  "Asia/Tokyo",
-  "Australia/Sydney",
-  "Africa/Lagos",
-  "Africa/Nairobi",
-  "Africa/Johannesburg",
+  "UTC", "Europe/London", "Europe/Paris", "Europe/Berlin",
+  "America/New_York", "America/Chicago", "America/Denver",
+  "America/Los_Angeles", "Asia/Dubai", "Asia/Karachi",
+  "Asia/Kolkata", "Asia/Tokyo", "Australia/Sydney",
+  "Africa/Lagos", "Africa/Nairobi", "Africa/Johannesburg",
 ];
 
 export default function AdminEmployees() {
@@ -44,7 +32,6 @@ export default function AdminEmployees() {
   const [loading, setLoading] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Form state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"ADMIN" | "EMPLOYEE">("EMPLOYEE");
@@ -73,79 +60,43 @@ export default function AdminEmployees() {
   }, []);
 
   const openAdd = () => {
-    setSelected(null);
-    setName("");
-    setEmail("");
-    setRole("EMPLOYEE");
-    setTimezone("UTC");
-    setPassword("");
-    setFormError(null);
-    setDrawer("add");
+    setSelected(null); setName(""); setEmail(""); setRole("EMPLOYEE");
+    setTimezone("UTC"); setPassword(""); setFormError(null); setDrawer("add");
   };
 
   const openEdit = (emp: Employee) => {
-    setSelected(emp);
-    setName(emp.name);
-    setEmail(emp.email);
-    setRole(emp.role);
-    setTimezone(emp.timezone || "UTC");
-    setPassword("");
-    setFormError(null);
-    setDrawer("edit");
+    setSelected(emp); setName(emp.name); setEmail(emp.email);
+    setRole(emp.role); setTimezone(emp.timezone || "UTC");
+    setPassword(""); setFormError(null); setDrawer("edit");
   };
 
   const openResetPassword = (emp: Employee) => {
-    setSelected(emp);
-    setNewPassword("");
-    setFormError(null);
-    setDrawer("reset-password");
+    setSelected(emp); setNewPassword(""); setFormError(null); setDrawer("reset-password");
   };
 
   const closeDrawer = () => {
-    setDrawer(null);
-    setSelected(null);
-    setFormError(null);
+    setDrawer(null); setSelected(null); setFormError(null);
   };
 
   const onCreateEmployee = async () => {
     setFormError(null);
-    if (!name.trim() || !email.trim()) {
-      setFormError("Name and email are required");
-      return;
-    }
-    if (password && password.length < 8) {
-      setFormError("Password must be at least 8 characters");
-      return;
-    }
+    if (!name.trim() || !email.trim()) { setFormError("Name and email are required"); return; }
+    if (password && password.length < 8) { setFormError("Password must be at least 8 characters"); return; }
     setLoading(true);
     try {
       await apiFetch("/admin/employees", {
         method: "POST",
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          role,
-          timezone,
-          password: password || undefined,
-        }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), role, timezone, password: password || undefined }),
       });
-      showToast(`${name} has been created successfully`, "success");
-      closeDrawer();
-      loadEmployees();
-    } catch (err: any) {
-      setFormError(err.message || "Failed to create employee");
-    } finally {
-      setLoading(false);
-    }
+      showToast(`${name} created successfully`, "success");
+      closeDrawer(); loadEmployees();
+    } catch (err: any) { setFormError(err.message || "Failed to create employee"); } finally { setLoading(false); }
   };
 
   const onUpdateEmployee = async () => {
     if (!selected) return;
     setFormError(null);
-    if (!name.trim()) {
-      setFormError("Name is required");
-      return;
-    }
+    if (!name.trim()) { setFormError("Name is required"); return; }
     setLoading(true);
     try {
       await apiFetch(`/admin/employees/${selected.id}`, {
@@ -153,49 +104,29 @@ export default function AdminEmployees() {
         body: JSON.stringify({ name: name.trim(), role, timezone }),
       });
       showToast("Employee updated successfully", "success");
-      closeDrawer();
-      loadEmployees();
-    } catch (err: any) {
-      setFormError(err.message || "Failed to update employee");
-    } finally {
-      setLoading(false);
-    }
+      closeDrawer(); loadEmployees();
+    } catch (err: any) { setFormError(err.message || "Failed to update employee"); } finally { setLoading(false); }
   };
 
   const onResetPassword = async () => {
     if (!selected) return;
     setFormError(null);
-    if (!newPassword || newPassword.length < 8) {
-      setFormError("Password must be at least 8 characters");
-      return;
-    }
+    if (!newPassword || newPassword.length < 8) { setFormError("Password must be at least 8 characters"); return; }
     setLoading(true);
     try {
-      await apiFetch(`/admin/employees/${selected.id}/reset-password`, {
-        method: "PATCH",
-        body: JSON.stringify({ password: newPassword }),
-      });
+      await apiFetch(`/admin/employees/${selected.id}/reset-password`, { method: "PATCH", body: JSON.stringify({ password: newPassword }) });
       showToast(`Password for ${selected.name} has been reset`, "success");
       closeDrawer();
-    } catch (err: any) {
-      setFormError(err.message || "Failed to reset password");
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: any) { setFormError(err.message || "Failed to reset password"); } finally { setLoading(false); }
   };
 
   const onToggleActive = async (emp: Employee) => {
     const action = emp.active ? "deactivate" : "activate";
     try {
       await apiFetch(`/admin/employees/${emp.id}/${action}`, { method: "PATCH" });
-      showToast(
-        emp.active ? `${emp.name} has been deactivated` : `${emp.name} has been reactivated`,
-        "success"
-      );
+      showToast(emp.active ? `${emp.name} deactivated` : `${emp.name} reactivated`, "success");
       loadEmployees();
-    } catch (err: any) {
-      showToast(err.message || "Action failed", "error");
-    }
+    } catch (err: any) { showToast(err.message || "Action failed", "error"); }
   };
 
   const onConfirmDelete = async () => {
@@ -204,26 +135,16 @@ export default function AdminEmployees() {
     try {
       await apiFetch(`/admin/employees/${deleteTarget.id}`, { method: "DELETE" });
       showToast(`${deleteTarget.name} has been deleted`, "success");
-      setDeleteTarget(null);
-      loadEmployees();
-    } catch (err: any) {
-      showToast(err.message || "Failed to delete employee", "error");
-    } finally {
-      setLoading(false);
-    }
+      setDeleteTarget(null); loadEmployees();
+    } catch (err: any) { showToast(err.message || "Failed to delete employee", "error"); } finally { setLoading(false); }
   };
 
   const filtered = showInactive ? employees : employees.filter((e) => e.active);
 
   return (
     <AdminLayout title="Employees">
-      {/* Toast */}
       {toast && (
-        <div
-          className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-semibold transition-all ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
+        <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-elevated text-white text-sm font-bold transition-all ${toast.type === "success" ? "bg-secondary" : "bg-error"}`}>
           <span className="material-symbols-outlined text-base">
             {toast.type === "success" ? "check_circle" : "error"}
           </span>
@@ -231,308 +152,214 @@ export default function AdminEmployees() {
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+        <div className="fixed inset-0 z-50 bg-primary/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface rounded-[2rem] shadow-xl w-full max-w-sm p-8">
             <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined text-red-500 text-3xl">warning</span>
-              <h3 className="text-lg font-bold">Delete Employee</h3>
+              <div className="size-12 rounded-2xl bg-error-container text-error flex items-center justify-center">
+                <span className="material-symbols-outlined text-3xl">warning</span>
+              </div>
+              <h3 className="text-xl font-black font-display text-primary tracking-tight">Delete Employee</h3>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
-              Are you sure you want to delete{" "}
-              <span className="font-bold">{deleteTarget.name}</span>? Their account will be
-              deactivated and all active sessions revoked. Attendance records are preserved.
+            <p className="text-sm text-on-surface-variant mb-8 font-medium leading-relaxed">
+              Are you sure you want to delete <span className="font-bold text-primary">{deleteTarget.name}</span>? 
+              Their account will be deactivated and all active sessions revoked. Attendance records are preserved.
             </p>
             <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteTarget(null)}
-                className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-700 hover:bg-slate-50"
-              >
+              <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 rounded-full bg-surface-container-low font-bold text-primary/70 hover:bg-surface-container-highest transition-colors">
                 Cancel
               </button>
-              <button
-                onClick={onConfirmDelete}
-                disabled={loading}
-                className="flex-1 py-2 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700 disabled:opacity-50"
-              >
-                {loading ? "Deleting…" : "Delete"}
+              <button onClick={onConfirmDelete} disabled={loading} className="flex-[2] py-3 rounded-full bg-error text-white font-bold shadow-lg hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50">
+                {loading ? "Deleting…" : "Delete Employee"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Side Drawer */}
       {drawer && (
-        <div className="fixed inset-0 z-40 bg-black/40 flex justify-end">
-          <div className="bg-white w-full max-w-md h-full overflow-y-auto shadow-2xl flex flex-col">
-            {/* Drawer header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200">
-              <h3 className="text-lg font-bold">
-                {drawer === "add"
-                  ? "Add Employee"
-                  : drawer === "reset-password"
-                  ? `Reset Password — ${selected?.name}`
-                  : `Edit — ${selected?.name}`}
-              </h3>
-              <button
-                onClick={closeDrawer}
-                className="text-slate-400 hover:text-slate-700"
-              >
+        <>
+          <div className="fixed inset-0 z-40 bg-primary/20 backdrop-blur-sm transition-opacity" onClick={closeDrawer}></div>
+          <aside className="fixed right-0 top-0 h-full z-50 bg-surface w-[450px] rounded-l-[3rem] shadow-[40px_8px_40px_rgba(74,53,37,0.1)] p-10 flex flex-col font-['Epilogue'] transition-transform">
+            <div className="flex justify-between items-start mb-10">
+              <div>
+                <h2 className="text-3xl font-black text-primary tracking-tighter leading-tight">
+                  {drawer === "add" ? "New Employee" : drawer === "reset-password" ? "Reset Password" : "Edit Employee"}
+                </h2>
+                <p className="text-primary/50 text-sm mt-1">
+                  {drawer === "reset-password" ? `Set new credentials for ${selected?.name}` : "Manage individual records and permissions"}
+                </p>
+              </div>
+              <button onClick={closeDrawer} className="w-12 h-12 flex items-center justify-center bg-surface-container-low rounded-full hover:bg-surface-container-highest transition-all">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
-            <div className="p-6 flex-1 space-y-4">
-              {drawer === "reset-password" ? (
-                <>
-                  <p className="text-sm text-slate-500">
-                    Set a new password for <span className="font-semibold">{selected?.name}</span>.
-                    Their active sessions will be logged out immediately.
-                  </p>
-                  <div>
-                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                      New Password
-                    </label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Min. 8 characters"
-                      className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                      Full Name
-                    </label>
-                    <input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Jane Smith"
-                      className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                      Email
-                    </label>
-                    <input
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={drawer === "edit"}
-                      placeholder="jane@company.com"
-                      type="email"
-                      className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:bg-slate-50 disabled:text-slate-400"
-                    />
-                    {drawer === "edit" && (
-                      <p className="text-xs text-slate-400 mt-1">Email cannot be changed</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                      Role
-                    </label>
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value as "ADMIN" | "EMPLOYEE")}
-                      className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                    >
-                      <option value="EMPLOYEE">Employee</option>
-                      <option value="ADMIN">Admin</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                      Timezone
-                    </label>
-                    <select
-                      value={timezone}
-                      onChange={(e) => setTimezone(e.target.value)}
-                      className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                    >
-                      {TIMEZONES.map((tz) => (
-                        <option key={tz} value={tz}>
-                          {tz}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {drawer === "add" && (
-                    <div>
-                      <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                        Temporary Password
-                        <span className="ml-1 font-normal text-slate-400">(optional — defaults to Employee123!)</span>
-                      </label>
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Min. 8 characters"
-                        className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
+            <div className="flex-1 overflow-y-auto space-y-8 pr-4 font-body">
               {formError && (
-                <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
-                  <span className="material-symbols-outlined text-sm mt-0.5">error</span>
+                <div className="flex items-start gap-3 bg-error-container text-error rounded-xl px-4 py-3 text-sm font-bold">
+                  <span className="material-symbols-outlined text-[18px]">error</span>
                   {formError}
                 </div>
               )}
+
+              {drawer === "reset-password" ? (
+                 <section>
+                    <h3 className="text-xs uppercase tracking-[0.2em] font-black text-primary/40 mb-6 flex items-center gap-2">
+                       <span className="w-6 h-[1px] bg-primary/10"></span>
+                       Security
+                    </h3>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase text-primary/50 ml-4">New Password</label>
+                      <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 8 characters" className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all" />
+                    </div>
+                 </section>
+              ) : (
+                <>
+                  <section>
+                    <h3 className="text-xs uppercase tracking-[0.2em] font-black text-primary/40 mb-6 flex items-center gap-2">
+                      <span className="w-6 h-[1px] bg-primary/10"></span> Personal Info
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase text-primary/50 ml-4">Full Name</label>
+                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase text-primary/50 ml-4">Email Address</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={drawer === "edit"} className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all disabled:opacity-50" />
+                      </div>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h3 className="text-xs uppercase tracking-[0.2em] font-black text-primary/40 mb-6 flex items-center gap-2">
+                      <span className="w-6 h-[1px] bg-primary/10"></span> Work & Role
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase text-primary/50 ml-4">Access Level</label>
+                          <select value={role} onChange={(e) => setRole(e.target.value as "ADMIN" | "EMPLOYEE")} className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all appearance-none cursor-pointer">
+                            <option value="ADMIN">Administrator</option>
+                            <option value="EMPLOYEE">Employee</option>
+                          </select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase text-primary/50 ml-4">Timezone</label>
+                          <select value={timezone} onChange={(e) => setTimezone(e.target.value)} className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all appearance-none cursor-pointer">
+                            {TIMEZONES.map((tz) => <option key={tz} value={tz}>{tz}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {drawer === "add" && (
+                    <section>
+                       <h3 className="text-xs uppercase tracking-[0.2em] font-black text-primary/40 mb-6 flex items-center gap-2">
+                         <span className="w-6 h-[1px] bg-primary/10"></span> Security
+                       </h3>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase text-primary/50 ml-4">Temporary Password</label>
+                          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters" className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all" />
+                       </div>
+                    </section>
+                  )}
+                </>
+              )}
             </div>
 
-            <div className="px-6 py-5 border-t border-slate-200">
-              <button
-                disabled={loading}
-                onClick={
-                  drawer === "add"
-                    ? onCreateEmployee
-                    : drawer === "reset-password"
-                    ? onResetPassword
-                    : onUpdateEmployee
-                }
-                className="w-full py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-primary/90 disabled:opacity-50 transition"
-              >
-                {loading
-                  ? "Saving…"
-                  : drawer === "add"
-                  ? "Create Employee"
-                  : drawer === "reset-password"
-                  ? "Reset Password"
-                  : "Save Changes"}
+            <div className="mt-8 pt-8 border-t border-primary/5 grid grid-cols-2 gap-4">
+              <button onClick={closeDrawer} className="px-8 py-5 rounded-full font-bold text-primary/60 bg-surface-container-low hover:bg-surface-container-highest transition-all">
+                Cancel
+              </button>
+              <button onClick={drawer === "add" ? onCreateEmployee : drawer === "reset-password" ? onResetPassword : onUpdateEmployee} disabled={loading} className="px-8 py-5 rounded-full font-bold text-white bg-[#E69D45] shadow-xl shadow-[#E69D45]/20 hover:scale-[1.02] active:scale-95 transition-all">
+                {loading ? "Saving..." : "Save Changes"}
               </button>
             </div>
-          </div>
-        </div>
+          </aside>
+        </>
       )}
 
-      {/* Main content */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-bold">Employee Directory</h3>
-            <p className="text-sm text-slate-500">
-              {filtered.length} {showInactive ? "total" : "active"} user
-              {filtered.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={showInactive}
-                onChange={(e) => setShowInactive(e.target.checked)}
-                className="rounded"
-              />
-              Show inactive
-            </label>
-            <button
-              onClick={openAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition"
-            >
-              <span className="material-symbols-outlined text-sm">person_add</span>
-              Add Employee
-            </button>
-          </div>
+      {/* Main Content Title */}
+      <div className="mb-10 flex justify-between items-end">
+        <div className="max-w-2xl">
+          <h1 className="text-5xl font-black font-display text-primary tracking-tighter mb-2">Employee Directory</h1>
+          <p className="text-primary/60 text-lg">Manage your team of professionals and define system access.</p>
         </div>
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full text-xs font-bold text-primary/60 cursor-pointer select-none border border-transparent hover:border-outline-variant transition-colors">
+            <span className="material-symbols-outlined text-sm">filter_list</span>
+            <input type="checkbox" checked={showInactive} onChange={(e) => setShowInactive(e.target.checked)} className="hidden" />
+            {showInactive ? "Viewing All" : "Viewing Active"}
+          </label>
+          <button onClick={openAdd} className="flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg hover:scale-105 transition-all active:scale-95">
+             <span className="material-symbols-outlined text-sm">add</span>
+             Add New
+          </button>
+        </div>
+      </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+      <div className="bg-surface-container-low rounded-[2.5rem] overflow-hidden shadow-sm">
+        <div className="overflow-x-auto min-h-[500px]">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Timezone</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+              <tr className="bg-primary/5 text-primary/50 text-[11px] uppercase tracking-[0.15em] font-black font-display">
+                <th className="px-10 py-6">Employee</th>
+                <th className="px-6 py-6">System Role</th>
+                <th className="px-6 py-6">Timezone</th>
+                <th className="px-6 py-6 border-l border-primary/5">Status</th>
+                <th className="px-10 py-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-primary/5">
               {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-400">
-                    No employees found
-                  </td>
-                </tr>
+                 <tr>
+                   <td colSpan={5} className="px-10 py-20 text-center text-primary/40 font-bold uppercase tracking-widest text-sm">
+                      No employees match criteria.
+                   </td>
+                 </tr>
               )}
               {filtered.map((emp) => (
-                <tr
-                  key={emp.id}
-                  className={`hover:bg-slate-50 transition ${!emp.active ? "opacity-60" : ""}`}
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold uppercase flex-shrink-0">
-                        {emp.name.charAt(0)}
+                <tr key={emp.id} className={`group transition-colors ${!emp.active ? "bg-surface-variant/50 hover:bg-surface-variant" : "hover:bg-surface"} cursor-default`}>
+                  <td className="px-10 py-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary font-display font-black text-lg flex items-center justify-center shrink-0 border border-primary/5">
+                         {emp.name.charAt(0)}
                       </div>
-                      <span className="font-semibold text-sm">{emp.name}</span>
+                      <div>
+                        <p className="font-bold font-display text-primary text-base">{emp.name}</p>
+                        <p className="text-xs text-primary/40 font-bold">{emp.email}</p>
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{emp.email}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-bold ${
-                        emp.role === "ADMIN"
-                          ? "bg-purple-50 text-purple-700"
-                          : "bg-slate-100 text-slate-600"
-                      }`}
-                    >
-                      {emp.role}
-                    </span>
+                  <td className="px-6 py-6 text-sm font-bold text-primary/70">{emp.role}</td>
+                  <td className="px-6 py-6 text-sm text-primary/60 font-medium">
+                     <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px] opacity-50">schedule</span>
+                        {emp.timezone || "UTC"}
+                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-500">{emp.timezone || "UTC"}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-bold ${
-                        emp.active
-                          ? "bg-green-50 text-green-700"
-                          : "bg-red-50 text-red-600"
-                      }`}
-                    >
-                      {emp.active ? "Active" : "Inactive"}
-                    </span>
+                  <td className="px-6 py-6 border-l border-primary/5">
+                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${emp.active ? "bg-secondary-container text-on-secondary-container" : "bg-surface-container-highest text-primary/40"}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${emp.active ? "bg-secondary" : "bg-primary/20"}`}></span>
+                        {emp.active ? "Active" : "Inactive"}
+                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <button
-                        onClick={() => openEdit(emp)}
-                        className="text-xs font-bold text-primary hover:underline"
-                      >
-                        Edit
+                  <td className="px-10 py-6 text-right">
+                    <div className="flex items-center justify-end gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => onToggleActive(emp)} title={emp.active ? "Deactivate" : "Activate"} className="p-2 hover:bg-surface-container-highest rounded-full transition-all text-primary/40 hover:text-primary">
+                         <span className="material-symbols-outlined">{emp.active ? "block" : "check_circle"}</span>
                       </button>
-                      <button
-                        onClick={() => openResetPassword(emp)}
-                        className="text-xs font-bold text-slate-500 hover:underline"
-                      >
-                        Reset PW
+                      <button onClick={() => openResetPassword(emp)} title="Reset Password" className="p-2 hover:bg-surface-container-highest rounded-full transition-all text-primary/40 hover:text-primary">
+                         <span className="material-symbols-outlined">key</span>
                       </button>
-                      <button
-                        onClick={() => onToggleActive(emp)}
-                        className={`text-xs font-bold hover:underline ${
-                          emp.active ? "text-amber-600" : "text-green-600"
-                        }`}
-                      >
-                        {emp.active ? "Deactivate" : "Reactivate"}
+                      <button onClick={() => openEdit(emp)} title="Edit Employee" className="p-2 hover:bg-surface-container-highest rounded-full transition-all text-primary/40 hover:text-primary">
+                         <span className="material-symbols-outlined">edit</span>
                       </button>
-                      <button
-                        onClick={() => setDeleteTarget(emp)}
-                        className="text-xs font-bold text-red-500 hover:underline"
-                      >
-                        Delete
+                      <button onClick={() => setDeleteTarget(emp)} title="Delete Employee" className="p-2 hover:bg-error-container rounded-full transition-all text-primary/40 hover:text-error">
+                         <span className="material-symbols-outlined">delete</span>
                       </button>
                     </div>
                   </td>
@@ -540,6 +367,9 @@ export default function AdminEmployees() {
               ))}
             </tbody>
           </table>
+          <div className="px-10 py-6 flex justify-between items-center text-primary/40 font-bold text-xs uppercase tracking-widest bg-primary/5">
+            <span>Showing {filtered.length} of {employees.length} total users</span>
+          </div>
         </div>
       </div>
     </AdminLayout>

@@ -52,47 +52,90 @@ export default function AdminSettings() {
 
   return (
     <AdminLayout title="Settings">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
-          <h3 className="text-lg font-bold">Company Profile</h3>
-          <div>
-            <label className="text-xs font-semibold text-slate-500">Company Name</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
-            />
+      <div className="mb-10 flex justify-between items-end">
+        <div className="max-w-2xl">
+          <h1 className="text-5xl font-black font-display text-primary tracking-tighter mb-2">Platform Settings</h1>
+          <p className="text-primary/60 text-lg">Configure global application preferences and branding.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 font-display h-[calc(100vh-200px)] min-h-[600px]">
+        <div className="bg-surface-container-low rounded-[2rem] border border-black/5 p-8 shadow-sm flex flex-col">
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold font-display text-primary tracking-tight">Company Profile</h3>
+            <p className="text-xs font-semibold text-primary/50 mt-1">Manage core organization details</p>
           </div>
-          <div>
-            <label className="text-xs font-semibold text-slate-500">Address</label>
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              rows={3}
-              className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
-            />
+          <div className="space-y-6 flex-1">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-primary/50 uppercase tracking-widest ml-4">Company Name</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-primary/50 uppercase tracking-widest ml-4">Address</label>
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                rows={5}
+                className="w-full bg-surface-container-highest border-none rounded-2xl px-6 py-4 text-primary font-semibold focus:ring-2 focus:ring-[#E69D45] transition-all resize-none"
+              />
+            </div>
           </div>
-          <button
-            onClick={onSave}
-            className="inline-flex items-center justify-center rounded-lg bg-primary text-white py-2 px-4 text-sm font-bold"
-          >
-            Save Changes
-          </button>
-          {status && <p className="text-sm text-slate-500">{status}</p>}
+          <div className="pt-8 border-t border-primary/5 mt-8 flex items-center justify-between">
+            {status && (
+                <div className="text-xs font-bold text-primary bg-primary/5 px-4 py-3 rounded-xl flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[16px] text-primary">info</span>
+                    {status}
+                </div>
+            )}
+            <button
+              onClick={onSave}
+              className="ml-auto rounded-full bg-primary text-on-primary h-[54px] px-8 text-xs uppercase tracking-widest font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">save</span>
+              Save Changes
+            </button>
+          </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
-          <h3 className="text-lg font-bold">Company Logo</h3>
-          <div className="h-32 w-32 rounded-xl border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center">
-            {logoUrl ? <img src={logoUrl} alt="Company logo" className="h-full w-full object-cover" /> : "No Logo"}
+        <div className="bg-surface-container-low rounded-[2rem] border border-black/5 p-8 shadow-sm flex flex-col h-min">
+          <div className="mb-8 text-center">
+            <h3 className="text-2xl font-bold font-display text-primary tracking-tight">Brand Identity</h3>
+            <p className="text-xs font-semibold text-primary/50 mt-1">Application logo settings</p>
           </div>
-          <input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] || null)} />
-          <button
-            onClick={onUpload}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold"
-          >
-            Upload Logo
-          </button>
+          <div className="flex flex-col items-center justify-center space-y-8">
+            <div className="h-48 w-48 rounded-[2rem] border-2 border-dashed border-primary/20 overflow-hidden bg-surface-container-highest flex items-center justify-center p-4 relative group transition-all hover:border-[#E69D45]/50">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Company logo" className="h-full w-full object-contain mix-blend-multiply" />
+              ) : (
+                <div className="text-center">
+                  <span className="material-symbols-outlined text-5xl text-primary/20 mb-3 block">image</span>
+                  <div className="text-[10px] font-black text-primary/30 uppercase tracking-widest">No Logo Set</div>
+                </div>
+              )}
+            </div>
+            
+            <div className="w-full space-y-4">
+              <label className="block w-full text-center">
+                <span className="cursor-pointer block w-full rounded-2xl bg-surface-container-highest hover:bg-black/5 py-4 px-6 text-sm font-bold text-primary transition-all text-ellipsis overflow-hidden whitespace-nowrap">
+                  {logoFile ? logoFile.name : "Select new image"}
+                </span>
+                <input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] || null)} className="hidden" />
+              </label>
+              
+              <button
+                onClick={onUpload}
+                disabled={!logoFile}
+                className="w-full rounded-full bg-secondary text-on-secondary h-[54px] text-xs uppercase tracking-widest font-bold shadow-lg shadow-secondary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">upload</span>
+                Upload
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </AdminLayout>

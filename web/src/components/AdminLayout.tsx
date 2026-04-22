@@ -5,7 +5,7 @@ import { apiFetch, ROOT_URL } from "../api/client";
 
 const navItems = [
   { label: "Dashboard", to: "/admin", icon: "dashboard" },
-  { label: "Employees", to: "/admin/employees", icon: "groups" },
+  { label: "Employees", to: "/admin/employees", icon: "group" },
   { label: "Locations", to: "/admin/locations", icon: "explore" },
   { label: "Assignments", to: "/admin/assignments", icon: "assignment" },
   { label: "Shifts", to: "/admin/shifts", icon: "schedule" },
@@ -29,61 +29,89 @@ export default function AdminLayout({ title, children }: { title: string; childr
   const logoUrl = tenant?.logoPath ? `${ROOT_URL}/uploads/${tenant.logoPath}` : null;
 
   return (
-    <div className="min-h-screen flex bg-background-light">
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-        <div className="p-6 flex items-center gap-3">
+    <div className="bg-surface text-on-surface overflow-hidden min-h-screen">
+      {/* SideNavBar Shell */}
+      <aside className="fixed left-0 top-0 h-full z-40 bg-primary w-72 flex flex-col py-8 font-['Epilogue'] tracking-tight shadow-[40px_8px_40px_rgba(74,53,37,0.06)]">
+        <div className="text-2xl font-bold text-[#f9f9f8] mb-8 px-8 flex items-center gap-3">
           {logoUrl ? (
-            <img src={logoUrl} alt="Company logo" className="size-10 rounded-lg object-cover border border-slate-200" />
+            <img src={logoUrl} alt="Company logo" className="size-8 rounded-lg object-cover" />
           ) : (
-            <div className="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
-              <span className="material-symbols-outlined">location_on</span>
-            </div>
+            <span className="material-symbols-outlined text-[28px]">apartment</span>
           )}
           <div>
-            <h1 className="font-bold text-lg leading-tight">{tenant?.name || "GeoAttend"}</h1>
-            <p className="text-xs text-slate-500">Admin Console</p>
+            {tenant?.name || "The Estate"}
+            <div className="text-[10px] uppercase tracking-[0.2em] opacity-60 font-medium mt-1">Management Portal</div>
           </div>
         </div>
-        <nav className="flex-1 px-4 space-y-1">
+
+        <nav className="flex-1 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const active = location.pathname === item.to;
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                  active ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                className={`transition-colors px-8 py-4 flex items-center gap-4 mx-2 rounded-full ${
+                  active 
+                    ? "text-[#f9f9f8] bg-[#322011] font-semibold" 
+                    : "text-[#f9f9f8]/70 hover:text-[#f9f9f8] hover:bg-[#322011]/50"
                 }`}
               >
-                <span className="material-symbols-outlined text-[22px]">{item.icon}</span>
-                <span className="text-sm font-semibold">{item.label}</span>
+                <span className="material-symbols-outlined" style={active ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                  {item.icon}
+                </span>
+                <span className={active ? "font-medium" : ""}>{item.label}</span>
               </Link>
             );
           })}
         </nav>
-        <div className="p-4 border-t border-slate-200">
+
+        <div className="px-6 mt-auto flex flex-col gap-2">
           <button
             onClick={() => logout()}
-            className="w-full rounded-lg bg-slate-100 text-slate-700 py-2 text-sm font-semibold hover:bg-slate-200"
+            className="w-full text-[#f9f9f8]/70 hover:text-white transition-colors px-4 py-3 flex items-center justify-center gap-3 hover:bg-[#322011]/50 rounded-full"
           >
-            Sign Out
+            <span className="material-symbols-outlined text-[20px]">logout</span>
+            <span className="font-semibold text-sm">Sign Out</span>
           </button>
-        </div>
-      </aside>
-      <main className="flex-1 flex flex-col">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
-          <h2 className="text-xl font-bold">{title}</h2>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-sm font-bold leading-none">{user?.name}</p>
-              <p className="text-[11px] text-slate-500 font-medium">System Admin</p>
+          
+          <div className="bg-[#322011] rounded-2xl p-4 flex items-center gap-3 mb-2 shadow-xl">
+            <div className="w-10 h-10 rounded-full bg-surface-tint border border-primary flex items-center justify-center text-white">
+               <span className="material-symbols-outlined">person</span>
             </div>
-            <div className="size-9 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary">person</span>
+            <div>
+              <p className="text-xs font-bold text-[#f9f9f8]">{user?.name || "Admin"}</p>
+              <p className="text-[10px] text-[#f9f9f8]/60 uppercase tracking-wider">System Logged In</p>
             </div>
           </div>
-        </header>
-        <div className="p-8 max-w-[1400px] mx-auto w-full">{children}</div>
+        </div>
+      </aside>
+
+      {/* TopAppBar Shell */}
+      <header className="fixed top-0 right-0 h-20 ml-72 w-[calc(100%-18rem)] z-30 bg-[#f9f9f8]/80 backdrop-blur-xl flex justify-between items-center px-10 font-['Manrope'] font-medium">
+        <div className="flex justify-between items-center w-full">
+          <h2 className="text-xl font-bold tracking-tight text-on-surface flex items-center gap-3 font-display">
+            <span className="w-8 h-1 bg-on-tertiary-container rounded-full hidden sm:block"></span>
+            {title}
+          </h2>
+          <div className="flex items-center gap-6">
+            <div className="flex gap-2">
+              <button className="p-3 rounded-full hover:bg-surface-variant transition-all text-primary/60 relative">
+                <span className="material-symbols-outlined">notifications</span>
+              </button>
+              <button className="p-3 rounded-full hover:bg-surface-variant transition-all text-primary/60">
+                <span className="material-symbols-outlined">help_outline</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Canvas */}
+      <main className="ml-72 pt-20 h-screen overflow-y-auto bg-surface">
+        <div className="p-10 pb-20">
+          {children}
+        </div>
       </main>
     </div>
   );

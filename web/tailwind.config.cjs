@@ -1,24 +1,73 @@
 module.exports = {
-  content: ["./index.html", "./src/**/*.{ts,tsx}"] ,
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: "#2b8cee",
-        "background-light": "#f6f7f8",
-        "background-dark": "#101922",
-        success: "#10b981",
-        error: "#ef4444"
-      },
-      fontFamily: {
-        display: ["Inter", "system-ui", "sans-serif"]
+        "outline-variant": "#d2c4bb",
+        "on-secondary-fixed-variant": "#225030",
+        "secondary-fixed-dim": "#a0d3a9",
+        "secondary-container": "#bbefc4",
+        "surface-variant": "#e2e2e2",
+        "on-tertiary-container": "#db943d",
+        "on-tertiary-fixed-variant": "#673d00",
+        "secondary": "#3a6846",
+        "on-secondary": "#ffffff",
+        "primary": "#322011",
+        "inverse-on-surface": "#f1f1f0",
+        "surface-container-highest": "#e2e2e2",
+        "on-primary-fixed-variant": "#594231",
+        "on-primary-fixed": "#29180a",
+        "outline": "#81756d",
+        "on-tertiary-fixed": "#2b1700",
+        "on-surface": "#1a1c1c",
+        "on-error": "#ffffff",
+        "tertiary": "#371e00",
+        "primary-fixed-dim": "#e1c0aa",
+        "on-primary-container": "#bb9d88",
+        "tertiary-fixed": "#ffddbb",
+        "tertiary-container": "#553100",
+        "surface-tint": "#725947",
+        "surface-container": "#eeeeed",
+        "on-surface-variant": "#4f453e",
+        "secondary-fixed": "#bbefc4",
+        "surface-container-high": "#e8e8e7",
+        "surface": "#f9f9f8",
+        "on-error-container": "#93000a",
+        "tertiary-fixed-dim": "#ffb868",
+        "on-tertiary": "#ffffff",
+        "on-primary": "#ffffff",
+        "background": "#f9f9f8",
+        "surface-container-lowest": "#ffffff",
+        "surface-dim": "#dadad9",
+        "surface-bright": "#f9f9f8",
+        "on-secondary-container": "#406e4c",
+        "surface-container-low": "#f3f4f3",
+        "on-background": "#1a1c1c",
+        "error": "#ba1a1a",
+        "error-container": "#ffdad6",
+        "primary-fixed": "#fedcc5",
+        "on-secondary-fixed": "#00210c",
+        "inverse-primary": "#e1c0aa",
+        "primary-container": "#4a3525",
+        "inverse-surface": "#2f3130"
       },
       borderRadius: {
-        DEFAULT: "0.25rem",
-        lg: "0.5rem",
-        xl: "0.75rem",
-        full: "9999px"
+        DEFAULT: "1rem",
+        lg: "2rem",
+        xl: "3rem",
+        full: "9999px",
+      },
+      fontFamily: {
+        headline: ["Epilogue"],
+        display: ["Epilogue"],
+        body: ["Manrope"],
+        label: ["Manrope"],
+      },
+      boxShadow: {
+        'subtle': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+        'elevated': '0 10px 30px -5px rgba(0, 0, 0, 0.08)',
       }
-    }
+    },
   },
-  plugins: [require("@tailwindcss/forms")]
+  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/container-queries")],
 };

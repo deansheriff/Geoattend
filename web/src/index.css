@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,7 +9,13 @@
 }
 
 body {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: 'Manrope', sans-serif;
+  background-color: var(--theme-surface, #f9f9f8);
+  color: var(--theme-on-surface, #1a1c1c);
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Epilogue', sans-serif;
 }
 
 .leaflet-container {
