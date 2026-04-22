@@ -41,8 +41,13 @@ router.post("/employees", async (req, res) => {
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Invalid payload" });
 
-  const passwordHash = req.body.password
-    ? await (await import("bcrypt")).default.hash(req.body.password, 10)
+  const existing = await prisma.user.findFirst({
+    where: { tenantId: req.user!.tenantId, email: parsed.data.email }
+  });
+  if (existing) return res.status(409).json({ error: "A user with this email already exists" });
+
+  const passwordHash = parsed.data.password
+    ? await (await import("bcrypt")).default.hash(parsed.data.password, 10)
     : await (await import("bcrypt")).default.hash("Employee123!", 10);
 
   const user = await prisma.user.create({
@@ -53,9 +58,10 @@ router.post("/employees", async (req, res) => {
       role: parsed.data.role ?? Role.EMPLOYEE,
       timezone: parsed.data.timezone,
       passwordHash
-    }
+    },
+    select: { id: true, name: true, email: true, role: true, active: true, timezone: true }
   });
-  res.json(user);
+  res.status(201).json(user);
 });
 
 router.patch("/employees/:id", async (req, res) => {
@@ -70,7 +76,8 @@ router.patch("/employees/:id", async (req, res) => {
 
   const user = await prisma.user.update({
     where: { id: req.params.id },
-    data: parsed.data
+    data: parsed.data,
+    select: { id: true, name: true, email: true, role: true, active: true, timezone: true }
   });
   res.json(user);
 });
@@ -78,7 +85,50 @@ router.patch("/employees/:id", async (req, res) => {
 router.patch("/employees/:id/deactivate", async (req, res) => {
   const user = await prisma.user.update({
     where: { id: req.params.id },
+    data: { active: false },
+    select: { id: true, name: true, email: true, role: true, active: true, timezone: true }
+  });
+  res.json(user);
+});
+
+router.patch("/employees/:id/activate", async (req, res) => {
+  const user = await prisma.user.update({
+    where: { id: req.params.id },
+    data: { active: true },
+    select: { id: true, name: true, email: true, role: true, active: true, timezone: true }
+  });
+  res.json(user);
+});
+
+router.delete("/employees/:id", async (req, res) => {
+  if (req.params.id === req.user!.id) {
+    return res.status(400).json({ error: "You cannot delete your own account" });
+  }
+  await prisma.session.updateMany({
+    where: { userId: req.params.id, revokedAt: null },
+    data: { revokedAt: new Date() }
+  });
+  await prisma.user.update({
+    where: { id: req.params.id },
     data: { active: false }
+  });
+  res.json({ ok: true });
+});
+
+router.patch("/employees/:id/reset-password", async (req, res) => {
+  const schema = z.object({ password: z.string().min(8) });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "Password must be at least 8 characters" });
+
+  const passwordHash = await (await import("bcrypt")).default.hash(parsed.data.password, 10);
+  await prisma.session.updateMany({
+    where: { userId: req.params.id, revokedAt: null },
+    data: { revokedAt: new Date() }
+  });
+  const user = await prisma.user.update({
+    where: { id: req.params.id },
+    data: { passwordHash },
+    select: { id: true, name: true, email: true, role: true, active: true, timezone: true }
   });
   res.json(user);
 });
