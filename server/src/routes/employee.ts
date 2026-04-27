@@ -291,4 +291,13 @@ router.get("/export", async (req, res) => {
   res.send(csv);
 });
 
+router.get("/shifts", async (req, res) => {
+  const shifts = await prisma.shift.findMany({
+    where: { userId: req.user!.id },
+    orderBy: { dayOfWeek: "asc" }
+  });
+  res.json(shifts);
+});
+
 export default router;
+
