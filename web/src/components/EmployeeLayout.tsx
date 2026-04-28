@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { useRef, useState } from "react";
+import { apiFetchForm, ROOT_URL } from "../api/client";
 
 const navItems = [
   { label: "Clock In", icon: "timer", to: "/employee/clock" },
@@ -7,18 +9,88 @@ const navItems = [
 ];
 
 export default function EmployeeLayout({ title, children }: { title: string; children: React.ReactNode }) {
-  const { logout } = useAuth();
+  const { user, logout, refresh } = useAuth();
   const location = useLocation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const avatarUrl = user?.profilePhoto
+    ? `${ROOT_URL}/uploads/${user.profilePhoto}`
+    : null;
+
+  const initials = user?.name
+    ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("photo", file);
+      await apiFetchForm("/employee/profile-photo", form);
+      await refresh();
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-surface font-display relative pb-28 md:pb-0 selection:bg-secondary/30">
       {/* Top App Bar */}
-      <header className="flex items-center justify-between bg-surface-container-low px-6 py-4 sticky top-0 z-20 border-b border-black/5">
+      <header className="flex items-center justify-between bg-surface-container-low px-4 md:px-6 py-3 sticky top-0 z-20 border-b border-black/5">
         <div className="flex items-center gap-3">
-          <div className="size-10 bg-primary/5 rounded-2xl flex items-center justify-center border border-primary/10">
-            <span className="material-symbols-outlined text-primary text-[22px]">location_on</span>
+          {/* Avatar / Profile Photo */}
+          <button
+            onClick={handleAvatarClick}
+            className="relative size-10 rounded-full overflow-hidden border-2 border-primary/10 hover:border-primary/30 transition-colors flex-shrink-0 group"
+            title="Tap to change profile photo"
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={user?.name ?? "Profile"}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-secondary-container flex items-center justify-center">
+                <span className="text-sm font-black text-on-secondary-container">{initials}</span>
+              </div>
+            )}
+            {uploading && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <span className="material-symbols-outlined text-white text-base animate-spin">progress_activity</span>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <span className="material-symbols-outlined text-white text-sm drop-shadow">photo_camera</span>
+            </div>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+
+          {/* Name + Title */}
+          <div className="min-w-0">
+            <h2 className="text-base md:text-lg font-bold font-display text-primary tracking-tight leading-tight truncate">
+              {user?.name ?? "GeoAttend"}
+            </h2>
+            <p className="text-[10px] font-bold text-primary/40 uppercase tracking-widest leading-none mt-0.5">
+              {title}
+            </p>
           </div>
-          <h2 className="text-xl font-bold font-display text-primary tracking-tight">GeoAttend</h2>
         </div>
         
         {/* Desktop Navigation */}

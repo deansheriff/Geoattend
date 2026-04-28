@@ -299,5 +299,18 @@ router.get("/shifts", async (req, res) => {
   res.json(shifts);
 });
 
+router.post("/profile-photo", upload.single("photo"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+
+  const user = await prisma.user.update({
+    where: { id: req.user!.id },
+    data: { profilePhoto: req.file.filename }
+  });
+
+  res.json({ ok: true, profilePhoto: user.profilePhoto });
+});
+
 export default router;
 

@@ -6,6 +6,7 @@ export type User = {
   email: string;
   role: "ADMIN" | "EMPLOYEE";
   timezone: string;
+  profilePhoto: string | null;
 };
 
 export async function login(email: string, password: string) {
